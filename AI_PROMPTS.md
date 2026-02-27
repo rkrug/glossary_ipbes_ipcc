@@ -155,6 +155,51 @@ run_app()
 
 ---
 
+## Session 3 — 2026-02-27
+
+**Tool**: Codex
+**Model**: GPT-5
+**Mode**: Default mode
+
+### Main requests handled
+
+- Make hosted deployments safe for shinyapps.io while keeping local update
+  functionality.
+- Add a deployment script for shinyapps.io.
+- Prepare release metadata for version `0.2.1`.
+
+### Key implementation decisions
+
+- Added runtime environment detection and default live-update toggle:
+  - local default: live update enabled
+  - hosted shinyapps default: live update disabled
+  - explicit env override through `GLOSSARY_ENABLE_LIVE_UPDATE`
+- Added top-level `app.R` as `appPrimaryDoc` for rsconnect deployments.
+- Added `scripts/deploy_shinyapps.R`:
+  - reads `SHINYAPPS_ACCOUNT`, `SHINYAPPS_TOKEN`, `SHINYAPPS_SECRET`
+  - deploys with `envVars = "GLOSSARY_ENABLE_LIVE_UPDATE"`
+  - defaults hosted deployments to `GLOSSARY_ENABLE_LIVE_UPDATE=0`
+
+### Files substantially updated in this session
+
+- `R/app.R`
+- `R/server.R`
+- `R/ui.R`
+- `app.R`
+- `scripts/deploy_shinyapps.R`
+- `README.md`
+- `inst/www/custom.css`
+- `.gitignore`
+- `DESCRIPTION`
+- `NEWS.md`
+- `CONTRIBUTORS.md`
+
+### Release target
+
+- Package release prepared as `0.2.1`
+
+---
+
 ## How to continue development with another AI agent
 
 Provide this file and the approved plan at

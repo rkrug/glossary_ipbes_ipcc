@@ -13,6 +13,9 @@
 #'   Defaults to a package-specific subdirectory of the OS user cache directory
 #'   as returned by [tools::R_user_dir()].  The directory is created
 #'   automatically if it does not exist.
+#' @param enable_live_update Logical; whether the "Update IPCC Glossary" control
+#'   is enabled. Defaults to `.default_live_update_enabled()`, which disables
+#'   live updates on hosted shinyapps.io deployments and enables them locally.
 #' @param ... Additional arguments passed to [shiny::shinyApp()] (e.g.
 #'   `launch.browser`, `port`).
 #' @return Invisibly, the [shiny::shinyApp()] object (only relevant when
@@ -24,8 +27,19 @@
 #' @export
 run_app <- function(
     cache_dir = tools::R_user_dir("glossary.ipbes.ipcc", which = "cache"),
+    enable_live_update = .default_live_update_enabled(),
     ...
 ) {
+  app <- .create_shiny_app(
+    cache_dir = cache_dir,
+    enable_live_update = enable_live_update
+  )
+
+  shiny::runApp(app, ...)
+}
+
+# Build the runnable shinyApp object with preloaded data.
+.create_shiny_app <- function(cache_dir, enable_live_update) {
   # Ensure cache directory exists
   if (!dir.exists(cache_dir)) {
     dir.create(cache_dir, recursive = TRUE)
@@ -93,11 +107,15 @@ run_app <- function(
 
   # ---- Launch app ----------------------------------------------------------
   app <- shiny::shinyApp(
-    ui     = build_ui(),
-    server = build_server(cache_dir, merged)
+    ui     = build_ui(enable_live_update = enable_live_update),
+    server = build_server(
+      cache_dir = cache_dir,
+      initial_data = merged,
+      enable_live_update = enable_live_update
+    )
   )
 
-  shiny::runApp(app, ...)
+  app
 }
 
 # Build metadata for startup cache invalidation based on source files.
@@ -250,4 +268,25 @@ run_app <- function(
     error = function(e) NULL
   )
   invisible(merged)
+}
+
+# Default runtime switch for live updates:
+# - Local/dev: enabled
+# - shinyapps.io hosted runtime: disabled
+# - Explicit env var GLOSSARY_ENABLE_LIVE_UPDATE overrides both
+.default_live_update_enabled <- function() {
+  raw <- trimws(Sys.getenv("GLOSSARY_ENABLE_LIVE_UPDATE", ""))
+  if (nzchar(raw)) {
+    val <- tolower(raw)
+    if (val %in% c("1", "true", "t", "yes", "y", "on")) return(TRUE)
+    if (val %in% c("0", "false", "f", "no", "n", "off")) return(FALSE)
+  }
+
+  !.is_shinyapps_runtime()
+}
+
+# Detect shinyapps.io runtime using standard env markers.
+.is_shinyapps_runtime <- function() {
+  identical(tolower(Sys.getenv("R_CONFIG_ACTIVE", "")), "shinyapps") ||
+    (nzchar(Sys.getenv("SHINY_PORT", "")) && nzchar(Sys.getenv("SHINY_HOST", "")))
 }

@@ -4,13 +4,16 @@
 \alias{build_server}
 \title{Build the Shiny application server function}
 \usage{
-build_server(cache_dir, initial_data)
+build_server(cache_dir, initial_data, enable_live_update = TRUE)
 }
 \arguments{
 \item{cache_dir}{Path to the cache directory.}
 
 \item{initial_data}{A pre-loaded merged glossary \code{\link[tibble:tibble]{tibble::tibble()}} from
 \code{\link[=merge_glossaries]{merge_glossaries()}}.}
+
+\item{enable_live_update}{Logical; if \code{FALSE}, disables the live IPCC update
+module for hosted-safe deployments.}
 }
 \value{
 A Shiny \code{server} function.

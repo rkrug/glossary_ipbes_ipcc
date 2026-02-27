@@ -1,5 +1,18 @@
 # glossary.ipbes.ipcc (development version)
 
+# glossary.ipbes.ipcc 0.2.1
+
+## Improvements
+
+* Added hosted-safe runtime behavior for shinyapps.io deployments:
+  - automatic hosted runtime detection
+  - live IPCC refresh can be disabled in hosted mode
+  - explicit override via `GLOSSARY_ENABLE_LIVE_UPDATE`
+* Added a top-level `app.R` deployment entrypoint for shinyapps.io/rsconnect.
+* Added `scripts/deploy_shinyapps.R` to support reproducible CLI deployments.
+* Added `.rsconnect/` to `.gitignore`.
+* Updated deployment documentation in `README.md`.
+
 # glossary.ipbes.ipcc 0.2.0
 
 ## Improvements

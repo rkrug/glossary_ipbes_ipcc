@@ -6,9 +6,11 @@
 #' @param cache_dir   Path to the cache directory.
 #' @param initial_data A pre-loaded merged glossary [tibble::tibble()] from
 #'   [merge_glossaries()].
+#' @param enable_live_update Logical; if `FALSE`, disables the live IPCC update
+#'   module for hosted-safe deployments.
 #' @return A Shiny `server` function.
 #' @keywords internal
-build_server <- function(cache_dir, initial_data) {
+build_server <- function(cache_dir, initial_data, enable_live_update = TRUE) {
   function(input, output, session) {
 
     # -- Shared reactive state -----------------------------------------------
@@ -28,7 +30,9 @@ build_server <- function(cache_dir, initial_data) {
     })
 
     # -- IPCC update module --------------------------------------------------
-    mod_update_ipcc_server("update_ipcc", cache_dir, merged_rv)
+    if (isTRUE(enable_live_update)) {
+      mod_update_ipcc_server("update_ipcc", cache_dir, merged_rv)
+    }
 
     # -- Table module --------------------------------------------------------
     mod_table_server(

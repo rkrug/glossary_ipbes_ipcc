@@ -3,9 +3,20 @@
 
 #' Build the Shiny application UI
 #'
+#' @param enable_live_update Logical; if `FALSE`, the IPCC live update control
+#'   is replaced with a hosted-safe informational label.
 #' @return A [shiny::fluidPage()] UI object.
 #' @keywords internal
-build_ui <- function() {
+build_ui <- function(enable_live_update = TRUE) {
+  update_ui <- if (isTRUE(enable_live_update)) {
+    mod_update_ipcc_ui("update_ipcc")
+  } else {
+    htmltools::span(
+      class = "update-disabled",
+      "Hosted mode: IPCC live update disabled"
+    )
+  }
+
   shiny::fluidPage(
     shiny::tags$head(
       shiny::tags$link(
@@ -49,7 +60,7 @@ build_ui <- function() {
           htmltools::span(style = "margin: 0 0.5rem; color: #ddd;", "|"),
 
           # IPCC update module UI
-          mod_update_ipcc_ui("update_ipcc"),
+          update_ui,
 
           # Right-aligned status message
           htmltools::div(

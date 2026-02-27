@@ -5,6 +5,7 @@
 *.Rproj
 .cache_startup_bench/
 .claude/
+.rsconnect/
 
 # macOS
 .DS_Store

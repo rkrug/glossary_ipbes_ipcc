@@ -39,6 +39,19 @@ The app stores its cache (updated IPCC data, merged table cache) in
 `tools::R_user_dir("glossary.ipbes.ipcc", "cache")`.  No manual setup is
 required.
 
+## Deploying to shinyapps.io
+
+Use the deploy helper script:
+
+```bash
+SHINYAPPS_ACCOUNT=... SHINYAPPS_TOKEN=... SHINYAPPS_SECRET=... \
+Rscript scripts/deploy_shinyapps.R
+```
+
+This deploys `app.R` and sets hosted-safe mode by default
+(`GLOSSARY_ENABLE_LIVE_UPDATE=0`), which disables live IPCC scraping on hosted
+instances. Local runs keep live update enabled by default.
+
 ## Data sources
 
 | Source | URL | Bundled snapshot |

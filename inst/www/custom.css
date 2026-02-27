@@ -183,6 +183,12 @@ h2 {
   margin-left: auto;
 }
 
+.update-disabled {
+  color: #777;
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
 /* ---- Main-table definition preview -------------------------------------- */
 .def-preview {
   position: relative;

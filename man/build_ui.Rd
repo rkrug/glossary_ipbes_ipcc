@@ -4,7 +4,11 @@
 \alias{build_ui}
 \title{Build the Shiny application UI}
 \usage{
-build_ui()
+build_ui(enable_live_update = TRUE)
+}
+\arguments{
+\item{enable_live_update}{Logical; if \code{FALSE}, the IPCC live update control
+is replaced with a hosted-safe informational label.}
 }
 \value{
 A \code{\link[shiny:fluidPage]{shiny::fluidPage()}} UI object.
