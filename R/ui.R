@@ -44,23 +44,6 @@ build_ui <- function() {
             icon  = shiny::icon("sort-alpha-down"),
             class = "btn btn-default active"
           ),
-          shiny::actionButton(
-            "sort_similarity",
-            label = "Sort by Similarity",
-            icon  = shiny::icon("chart-bar"),
-            class = "btn btn-default"
-          ),
-          shiny::selectInput(
-            "similarity_metric",
-            label = NULL,
-            choices = c(
-              "Between All Definitions" = "sim_between_all",
-              "Within IPBES" = "sim_within_ipbes",
-              "Within IPCC" = "sim_within_ipcc"
-            ),
-            selected = "sim_between_all",
-            width = "240px"
-          ),
 
           # Separator
           htmltools::span(style = "margin: 0 0.5rem; color: #ddd;", "|"),

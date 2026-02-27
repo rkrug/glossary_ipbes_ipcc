@@ -18,12 +18,9 @@ mod_table_ui <- function(id) {
 #' @param id        Shiny module namespace id.
 #' @param merged_rv A [shiny::reactiveVal()] containing the merged glossary
 #'   [tibble::tibble()] (output of [merge_glossaries()]).
-#' @param sort_mode A [shiny::reactive()] returning `"alpha"` or `"similarity"`.
-#' @param sort_metric A [shiny::reactive()] returning one of
-#'   `"sim_between_all"`, `"sim_within_ipbes"`, `"sim_within_ipcc"`.
 #' @param cache_dir Path to the cache directory.
 #' @keywords internal
-mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
+mod_table_server <- function(id, merged_rv, cache_dir) {
   shiny::moduleServer(id, function(input, output, session) {
     prepared_rv <- shiny::reactiveVal(NULL)
     detail_registered <- new.env(parent = emptyenv())
@@ -41,20 +38,7 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
     display_data <- shiny::reactive({
       data <- prepared_rv()
       if (is.null(data) || nrow(data) == 0) return(data)
-
-      if (sort_mode() == "similarity") {
-        # Sort descending by selected similarity metric; NA goes to bottom
-        metric_col <- sort_metric()
-        if (!metric_col %in% c("sim_between_all", "sim_within_ipbes",
-                               "sim_within_ipcc")) {
-          metric_col <- "sim_between_all"
-        }
-        data <- data[order(data[[metric_col]], decreasing = TRUE,
-                           na.last = TRUE), ]
-      } else {
-        data <- data[order(data$matched_term, na.last = TRUE), ]
-      }
-      data
+      data[order(data$matched_term, na.last = TRUE), ]
     })
 
     # -- Reactable output ------------------------------------------------------
@@ -70,8 +54,10 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
       }
 
       # Strip list-columns for the display frame; keep indices for detail fn
-      display_df <- data[, c("term_display", "ipbes_preview_html",
-                              "ipcc_preview_html", "similarity_html"),
+      display_df <- data[, c("term_display",
+                              "sim_between_all", "between_similarity_html",
+                              "sim_within_ipbes", "ipbes_preview_html",
+                              "sim_within_ipcc", "ipcc_preview_html"),
                          drop = FALSE]
 
       reactable::reactable(
@@ -96,22 +82,32 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
             sortable = TRUE,
             html     = FALSE
           ),
-          ipbes_preview_html = reactable::colDef(
-            name     = "IPBES Definition",
-            minWidth = 260,
-            html     = TRUE
-          ),
-          ipcc_preview_html = reactable::colDef(
-            name     = "IPCC Definition",
-            minWidth = 260,
-            html     = TRUE
-          ),
-          similarity_html = reactable::colDef(
+          sim_between_all = reactable::colDef(
             name     = "Similarity",
             width    = 260,
-            sortable = FALSE,
-            html     = TRUE
-          )
+            sortable = TRUE,
+            html     = TRUE,
+            cell     = function(value, index) display_df$between_similarity_html[index]
+          ),
+          between_similarity_html = reactable::colDef(show = FALSE),
+          sim_within_ipbes = reactable::colDef(
+            name     = "IPBES Definition",
+            minWidth = 260,
+            sortable = TRUE,
+            align    = "left",
+            html     = TRUE,
+            cell     = function(value, index) display_df$ipbes_preview_html[index]
+          ),
+          ipbes_preview_html = reactable::colDef(show = FALSE),
+          sim_within_ipcc = reactable::colDef(
+            name     = "IPCC Definition",
+            minWidth = 260,
+            sortable = TRUE,
+            align    = "left",
+            html     = TRUE,
+            cell     = function(value, index) display_df$ipcc_preview_html[index]
+          ),
+          ipcc_preview_html = reactable::colDef(show = FALSE)
         ),
         details = function(index) {
           shiny::uiOutput(session$ns(paste0("detail_row_", index)))
@@ -245,12 +241,13 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
   )
 }
 
-.TABLE_VIEW_CACHE_VERSION <- 2L
+.TABLE_VIEW_CACHE_VERSION <- 4L
 
 .has_current_table_view_cache <- function(data) {
   if (is.null(data) || nrow(data) == 0) return(TRUE)
   precomputed_cols <- c(
-    "term_display", "ipbes_preview_html", "ipcc_preview_html", "similarity_html"
+    "term_display", "ipbes_preview_html", "ipcc_preview_html",
+    "between_similarity_html"
   )
   if (!all(precomputed_cols %in% names(data))) return(FALSE)
   if (!"table_view_version" %in% names(data)) return(FALSE)
@@ -277,6 +274,7 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
     .definition_preview_html(
       detail_df   = data$ipbes_data[[i]],
       source_col  = "assessment",
+      similarity_score = data$sim_within_ipbes[i],
       empty_label = "\u2014"
     )
   }, character(1))
@@ -285,16 +283,13 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
     .definition_preview_html(
       detail_df   = data$ipcc_data[[i]],
       source_col  = "report",
+      similarity_score = data$sim_within_ipcc[i],
       empty_label = "\u2014"
     )
   }, character(1))
 
-  data$similarity_html <- vapply(seq_len(n), function(i) {
-    similarity_triplet_html(
-      sim_within_ipbes = data$sim_within_ipbes[i],
-      sim_within_ipcc  = data$sim_within_ipcc[i],
-      sim_between_all  = data$sim_between_all[i]
-    )
+  data$between_similarity_html <- vapply(seq_len(n), function(i) {
+    .between_similarity_html(data$sim_between_all[i])
   }, character(1))
   data$table_view_version <- rep(.TABLE_VIEW_CACHE_VERSION, n)
 
@@ -312,11 +307,19 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
 .definition_preview_html <- function(
     detail_df,
     source_col,
+    similarity_score,
     empty_label = "\u2014"
 ) {
+  sim_html <- .within_similarity_html(similarity_score)
   grouped <- .group_definitions_by_text(detail_df, source_col)
   if (is.null(grouped) || nrow(grouped) == 0) {
-    return(htmltools::span(style = "color:#aaa;", empty_label) |> as.character())
+    return(
+      htmltools::div(
+        class = "def-preview-wrap",
+        htmltools::HTML(sim_html),
+        htmltools::span(style = "color:#aaa;", empty_label)
+      ) |> as.character()
+    )
   }
 
   blocks <- vapply(seq_len(nrow(grouped)), function(i) {
@@ -343,9 +346,24 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
   }, character(1))
 
   htmltools::div(
-    class = "def-preview",
-    htmltools::HTML(paste(blocks, collapse = ""))
+    class = "def-preview-wrap",
+    htmltools::HTML(sim_html),
+    htmltools::div(
+      class = "def-preview",
+      htmltools::HTML(paste(blocks, collapse = ""))
+    )
   ) |> as.character()
+}
+
+.within_similarity_html <- function(score) {
+  htmltools::div(
+    class = "def-sim-row",
+    htmltools::HTML(similarity_bar_html(score))
+  ) |> as.character()
+}
+
+.between_similarity_html <- function(score) {
+  similarity_bar_html(score)
 }
 
 .group_definitions_by_text <- function(detail_df, source_col) {

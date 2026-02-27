@@ -64,7 +64,7 @@ cat("=== Part 2: IPCC glossary (scrape from web) ===\n")
 cat("This will take several minutes. Please be patient.\n\n")
 
 # Load required packages
-required_pkgs <- c("httr", "rvest", "jsonlite", "dplyr")
+required_pkgs <- c("httr", "rvest", "dplyr")
 missing_pkgs  <- required_pkgs[!sapply(required_pkgs, requireNamespace,
                                        quietly = TRUE)]
 if (length(missing_pkgs) > 0) {

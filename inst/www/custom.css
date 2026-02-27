@@ -192,6 +192,27 @@ h2 {
   overflow: hidden;
 }
 
+.def-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: left;
+}
+
+.def-sim-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.def-sim-row .sim-bar-wrap {
+  width: 150px;
+  max-width: 150px;
+}
+
+.def-sim-row .sim-label {
+  font-size: 0.82rem;
+}
+
 .def-preview-item {
   margin-bottom: 0.3rem;
 }
@@ -199,6 +220,7 @@ h2 {
 .def-preview-source {
   font-weight: 600;
   color: #444;
+  text-align: left;
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -206,6 +228,7 @@ h2 {
 
 .def-preview-text {
   color: #222;
+  text-align: left;
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -258,6 +281,7 @@ h2 {
   line-height: 1.25;
   font-weight: 600;
   color: #2f2f2f;
+  text-align: left;
   padding: 0.4rem 0.45rem;
   background: #f7f7f7;
   min-width: 180px;

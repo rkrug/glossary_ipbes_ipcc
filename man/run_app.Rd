@@ -9,7 +9,7 @@ run_app(
 }
 \arguments{
 \item{cache_dir}{Directory used to store the user-updated IPCC glossary CSV
-and pre-computed Wikipedia similarity scores.  Defaults to a
+and merged table cache.  Defaults to a
 package-specific subdirectory of the OS user cache directory as returned
 by \code{\link[tools]{R_user_dir}}.  Created automatically if it does not
 exist.}

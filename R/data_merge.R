@@ -28,7 +28,6 @@
 #'     \item{sim_within_ipbes}{Mean pairwise similarity among IPBES definitions.}
 #'     \item{sim_within_ipcc}{Mean pairwise similarity among IPCC definitions.}
 #'     \item{sim_between_all}{Mean cross-similarity across all IPBES × IPCC definitions.}
-#'     \item{text_similarity}{Alias of `sim_between_all` for backward compatibility.}
 #'   }
 #' @export
 merge_glossaries <- function(ipbes_summary, ipcc_summary) {
@@ -113,7 +112,6 @@ merge_glossaries <- function(ipbes_summary, ipcc_summary) {
       sim_within_ipbes   = NA_real_,
       sim_within_ipcc    = NA_real_,
       sim_between_all    = NA_real_,
-      text_similarity    = NA_real_,
       stringsAsFactors   = FALSE
     )
   }))
@@ -129,7 +127,6 @@ merge_glossaries <- function(ipbes_summary, ipcc_summary) {
   out$sim_within_ipbes <- vapply(metrics, `[[`, numeric(1), "within_ipbes")
   out$sim_within_ipcc  <- vapply(metrics, `[[`, numeric(1), "within_ipcc")
   out$sim_between_all  <- vapply(metrics, `[[`, numeric(1), "between_all")
-  out$text_similarity  <- out$sim_between_all
 
   # Sort alphabetically by default
   out <- out[order(out$matched_term, na.last = TRUE), ]
@@ -180,59 +177,4 @@ merge_glossaries <- function(ipbes_summary, ipcc_summary) {
     ipbes_data         = ipbes_data,
     ipcc_data          = ipcc_data
   )
-}
-
-# =============================================================================
-
-#' Load or initialise the similarity cache
-#'
-#' @param cache_dir Cache directory path.
-#' @return Named numeric vector of precomputed similarity scores, or empty
-#'   vector if no cache exists.
-#' @keywords internal
-load_similarity_cache <- function(cache_dir) {
-  path <- file.path(cache_dir, "similarity_cache.rds")
-  if (file.exists(path)) {
-    tryCatch(readRDS(path), error = function(e) numeric(0))
-  } else {
-    numeric(0)
-  }
-}
-
-#' Save similarity scores to the on-disk cache
-#'
-#' @param scores  Named numeric vector (names = matched_term).
-#' @param cache_dir Cache directory path.
-#' @keywords internal
-save_similarity_cache <- function(scores, cache_dir) {
-  if (!dir.exists(cache_dir)) dir.create(cache_dir, recursive = TRUE)
-  saveRDS(scores, file.path(cache_dir, "similarity_cache.rds"))
-  invisible(scores)
-}
-
-#' Join cached similarity scores into the merged tibble
-#'
-#' @param merged   Output of [merge_glossaries()].
-#' @param scores   Named numeric vector from [load_similarity_cache()].
-#' @return `merged` with `text_similarity` filled where cache matches.
-#' @export
-apply_similarity_cache <- function(merged, scores) {
-  has_ipbes <- !is.na(merged$ipbes_summary_def) &
-    nzchar(trimws(merged$ipbes_summary_def))
-  has_ipcc  <- !is.na(merged$ipcc_summary_def) &
-    nzchar(trimws(merged$ipcc_summary_def))
-  eligible <- has_ipbes & has_ipcc
-  eligible_idx <- which(eligible)
-
-  # Do not display similarity for one-sided terms
-  merged$text_similarity[!eligible] <- NA_real_
-
-  if (length(scores) == 0 || length(eligible_idx) == 0) return(merged)
-
-  idx <- match(merged$matched_term[eligible_idx], names(scores))
-  fill <- !is.na(idx)
-  if (any(fill)) {
-    merged$text_similarity[eligible_idx[fill]] <- scores[idx[fill]]
-  }
-  merged
 }

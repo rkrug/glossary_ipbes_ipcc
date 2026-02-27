@@ -1,5 +1,27 @@
 # glossary.ipbes.ipcc (development version)
 
+# glossary.ipbes.ipcc 0.2.0
+
+## Improvements
+
+* Major startup performance improvements:
+  - Bundled merged cache snapshot in `inst/extdata/merged_glossary_cache.rds`
+  - Startup cache loading and invalidation metadata
+  - Source-package path fallback to use local `inst/` data when running from checkout
+* IPCC scraper switched to the full `search.php` endpoint family (all reports).
+* Overview table and detail rendering updated:
+  - Grouped identical definitions in overview
+  - Pairwise similarity matrix in expanded rows
+  - Lazy detail rendering to avoid large initial payloads
+* Similarity display and layout refined:
+  - Within-similarity indicators inside definition columns
+  - Between-similarity shown in dedicated Similarity column
+  - Similarity column moved to second position
+* Removed `Sort by Similarity` control from the toolbar (table remains sortable by column headers).
+* Removed unused Wikipedia similarity wiring and legacy cache helpers.
+* Updated footer IPCC link to `https://apps.ipcc.ch/glossary/search.php`.
+* Updated styling and alignment for definition/assessment-report text.
+
 # glossary.ipbes.ipcc 0.1.0
 
 ## New features
@@ -13,10 +35,8 @@
   view.
 * Word-level text diff (LCS algorithm) with colour-coded `<del>`/`<ins>`
   highlighting.
-* Similarity scoring via Wikipedia REST API (TF-IDF cosine similarity, cached
-  to disk across sessions).
 * "Update IPCC Glossary" button with live `withProgress()` feedback that
   re-scrapes the IPCC website.
-* "Sort Alphabetically" (default) and "Sort by Similarity" buttons.
+* "Sort Alphabetically" (default) button.
 * `run_app()` entry point accepting a `cache_dir` argument (defaults to
   `tools::R_user_dir("glossary.ipbes.ipcc", "cache")`).

@@ -100,6 +100,61 @@ run_app()
 
 ---
 
+## Session 2 — 2026-02-27
+
+**Tool**: Codex
+**Model**: GPT-5
+**Mode**: Default mode
+
+### Main requests handled
+
+- Fix HTML/tag rendering issues in overview and expanded diff blocks
+- Improve typography/readability and table layout
+- Switch IPCC scraper/update flow to `search.php` endpoint family (all reports)
+- Clarify and refine similarity metrics:
+  - within IPBES
+  - within IPCC
+  - between all definitions
+- Rework expanded detail view into a pairwise matrix and reduce duplication
+- Improve startup and refresh performance with packaged and startup caches
+- Keep runtime update behavior while preserving package snapshots
+- Remove unstable/unused similarity UI controls and Wikipedia-specific wiring
+- Final layout refinements (column ordering, alignment, compact indicators)
+
+### Key implementation decisions
+
+- Startup cache precedence:
+  1. packaged merged cache (`inst/extdata/merged_glossary_cache.rds`)
+  2. user startup cache (`startup_merged_cache.rds`)
+  3. rebuild from source CSVs
+- Source-run compatibility:
+  - added fallback path resolution to local `inst/` when `system.file()` is empty
+- Table performance:
+  - precompute table HTML fragments with cache versioning
+  - lazy-load expanded detail content
+- Similarity model simplification:
+  - use in-package text similarity metrics from glossary definitions
+  - remove unused Wikipedia similarity runtime path
+
+### Files substantially updated in this session
+
+- `R/app.R`
+- `R/data_ipcc.R`
+- `R/mod_table.R`
+- `R/mod_update_ipcc.R`
+- `R/server.R`
+- `R/ui.R`
+- `R/data_merge.R`
+- `inst/www/custom.css`
+- `data-raw/prepare_data.R`
+- `inst/extdata/merged_glossary_cache.rds`
+
+### Release target
+
+- Package release prepared as `0.2.0`
+
+---
+
 ## How to continue development with another AI agent
 
 Provide this file and the approved plan at

@@ -15,9 +15,8 @@ An R package containing a Shiny app for comparing the
   assessment and IPCC report
 - **Word-level text diff**: colour-coded differences between IPBES and IPCC
   definitions
-- **Similarity scoring**: TF-IDF cosine similarity computed via the Wikipedia
-  REST API (cached across sessions)
-- **Sort alphabetically** (default) or **by similarity**
+- **Similarity scoring**: within-source and between-source text similarity
+- **Sort alphabetically** (default) and sortable similarity columns
 - **Update IPCC glossary** button that re-scrapes the live
   [IPCC Glossary website](https://apps.ipcc.ch/glossary/) with real-time
   progress feedback
@@ -36,7 +35,7 @@ remotes::install_github("ipbes/glossary_ipbes_ipcc")
 glossary.ipbes.ipcc::run_app()
 ```
 
-The app stores its cache (updated IPCC data, similarity scores) in
+The app stores its cache (updated IPCC data, merged table cache) in
 `tools::R_user_dir("glossary.ipbes.ipcc", "cache")`.  No manual setup is
 required.
 
