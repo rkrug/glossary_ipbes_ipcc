@@ -3,3 +3,9 @@
 ^LICENSE\.md$
 ^README\.Rmd$
 ^\.DS_Store$
+^\.cache_startup_bench$
+^\.claude$
+^BACKGROUND\.md$
+^\.\.Rcheck$
+^.*[.]Rcheck$
+^glossary[.]ipbes[.]ipcc_.*[.]tar[.]gz$

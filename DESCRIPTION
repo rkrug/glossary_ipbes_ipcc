@@ -1,6 +1,9 @@
 Package: glossary.ipbes.ipcc
 Title: Compare IPBES and IPCC Glossaries
-Version: 0.2.1
+Version: 0.5.0
+Author: IPBES TSU Knowledge and Data [aut, cre] (ORCID:
+    <https://orcid.org/0000-0003-4511-3407>), Claude Code [ctb], Codex [ctb]
+Maintainer: IPBES TSU Knowledge and Data <aidin.niamir@senckenberg.de>
 Authors@R: c(
     person("IPBES TSU Knowledge and Data", role = c("aut", "cre"),
            email = "aidin.niamir@senckenberg.de",
@@ -8,7 +11,7 @@ Authors@R: c(
     person("Claude Code", role = "ctb",
            comment = "AI assistant (claude-sonnet-4-6, Plan mode); https://claude.ai/claude-code"),
     person("Codex", role = "ctb",
-           comment = "AI assistant (Codex v0.2.1, model GPT-5, Default mode); https://openai.com"))
+           comment = "AI assistant (Codex v0.5.0, model GPT-5, Default mode); https://openai.com"))
 Description: A Shiny application that loads the IPBES biodiversity glossary
     and the IPCC climate change glossary, merges them by term, and displays
     definitions side-by-side with text similarity scores and word-level diffs.
@@ -25,8 +28,6 @@ Imports:
     htmltools (>= 0.5.0),
     httr (>= 1.4.0),
     rvest (>= 1.0.0),
-    dplyr (>= 1.1.0),
-    tidyr (>= 1.3.0),
     tibble (>= 3.2.0),
     tools,
     utils
@@ -37,6 +38,8 @@ Suggests:
     testthat (>= 3.0.0),
     knitr,
     rmarkdown
+VignetteBuilder: knitr
 Config/testthat/edition: 3
-URL: https://github.com/ipbes/glossary_ipbes_ipcc
-BugReports: https://github.com/ipbes/glossary_ipbes_ipcc/issues
+URL: https://github.com/rkrug/glossary_ipbes_ipcc,
+    https://github.com/rkrug/glossary_ipbes_ipcc/issues
+BugReports: https://github.com/rkrug/glossary_ipbes_ipcc/issues

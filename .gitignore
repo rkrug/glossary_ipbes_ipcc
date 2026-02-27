@@ -6,6 +6,10 @@
 .cache_startup_bench/
 .claude/
 .rsconnect/
+rsconnect/
+..Rcheck/
+*.Rcheck/
+glossary.ipbes.ipcc_*.tar.gz
 
 # macOS
 .DS_Store

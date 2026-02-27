@@ -11,7 +11,7 @@ summarise_ipcc(ipcc_df)
 }
 \value{
 A \code{\link[dplyr:reexports]{dplyr::tibble()}} with columns \code{term}, \code{n_reports},
-\code{summary_definition}, \code{ipcc_data} (list-column of report × definition
+\code{summary_definition}, \code{ipcc_data} (list-column of report x definition
 tibbles).
 }
 \description{

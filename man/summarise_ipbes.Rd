@@ -17,7 +17,7 @@ A \code{\link[dplyr:reexports]{dplyr::tibble()}} with columns:
 \item{summary_definition}{Shortest non-trivial definition across
 assessments (proxy for the most concise formulation).}
 \item{ipbes_data}{List-column; each element is a tibble of
-assessment × definition rows for use in detail view.}
+assessment x definition rows for use in detail view.}
 }
 }
 \description{

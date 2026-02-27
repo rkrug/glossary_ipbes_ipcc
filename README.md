@@ -1,8 +1,12 @@
 # glossary.ipbes.ipcc
 
 <!-- badges: start -->
-[![R CMD CHECK](https://github.com/ipbes/glossary_ipbes_ipcc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ipbes/glossary_ipbes_ipcc/actions/workflows/R-CMD-check.yaml)
+[![R CMD CHECK](https://github.com/rkrug/glossary_ipbes_ipcc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rkrug/glossary_ipbes_ipcc/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
+
+This app was created iteratively with both **Claude Code** and **Codex**
+assistance. Contributor details, model/mode metadata, and session history are
+documented in `CONTRIBUTORS.md` and `AI_PROMPTS.md`.
 
 An R package containing a Shiny app for comparing the
 [IPBES](https://www.ipbes.net/) biodiversity glossary and the
@@ -26,7 +30,7 @@ An R package containing a Shiny app for comparing the
 ```r
 # Install from GitHub
 if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
-remotes::install_github("ipbes/glossary_ipbes_ipcc")
+remotes::install_github("rkrug/glossary_ipbes_ipcc")
 ```
 
 ## Usage
@@ -39,6 +43,12 @@ The app stores its cache (updated IPCC data, merged table cache) in
 `tools::R_user_dir("glossary.ipbes.ipcc", "cache")`.  No manual setup is
 required.
 
+## Detailed technical background
+
+For a full implementation walkthrough (scraping, merge logic, similarity
+methods, word-level diff interpretation, caching, and local vs hosted behavior),
+see [BACKGROUND.md](BACKGROUND.md).
+
 ## Deploying to shinyapps.io
 
 Use the deploy helper script:
@@ -49,8 +59,8 @@ Rscript scripts/deploy_shinyapps.R
 ```
 
 This deploys `app.R` and sets hosted-safe mode by default
-(`GLOSSARY_ENABLE_LIVE_UPDATE=0`), which disables live IPCC scraping on hosted
-instances. Local runs keep live update enabled by default.
+through runtime detection on shinyapps.io, which disables live IPCC scraping
+for hosted instances. Local runs keep live update enabled by default.
 
 ## Data sources
 

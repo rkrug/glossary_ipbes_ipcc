@@ -3,7 +3,7 @@
 
 #' Load and clean the IPBES glossary
 #'
-#' Reads the bundled IPBES CSV (one row per concept × assessment) and returns a
+#' Reads the bundled IPBES CSV (one row per concept x assessment) and returns a
 #' tidy long tibble ready for summarisation.
 #'
 #' @param path Path to the IPBES CSV file.  Defaults to the copy bundled in
@@ -99,7 +99,7 @@ load_ipbes <- function(
 #'     \item{summary_definition}{Shortest non-trivial definition across
 #'       assessments (proxy for the most concise formulation).}
 #'     \item{ipbes_data}{List-column; each element is a tibble of
-#'       assessment × definition rows for use in detail view.}
+#'       assessment x definition rows for use in detail view.}
 #'   }
 #' @export
 summarise_ipbes <- function(ipbes_long) {

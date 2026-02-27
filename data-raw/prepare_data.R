@@ -79,7 +79,7 @@ PREFIXES <- c("123", "A", "B", "C", "D", "E", "F", "G", "H", "I",
               "T", "U", "V", "W", "Y", "Z")
 
 SESSION_HEADERS <- httr::add_headers(
-  `User-Agent` = "glossary.ipbes.ipcc-data-prep/1.0 (https://github.com/ipbes/glossary_ipbes_ipcc)",
+  `User-Agent` = "glossary.ipbes.ipcc-data-prep/1.0 (https://github.com/rkrug/glossary_ipbes_ipcc)",
   `Referer`    = "https://apps.ipcc.ch/glossary/search.php"
 )
 

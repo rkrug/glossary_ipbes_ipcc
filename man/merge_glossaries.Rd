@@ -25,7 +25,7 @@ A \code{\link[dplyr:reexports]{dplyr::tibble()}} with columns:
 \item{ipcc_data}{List-column: per-report tibble from IPCC.}
 \item{sim_within_ipbes}{Mean pairwise similarity among IPBES definitions.}
 \item{sim_within_ipcc}{Mean pairwise similarity among IPCC definitions.}
-\item{sim_between_all}{Mean cross-similarity across all IPBES × IPCC definitions.}
+\item{sim_between_all}{Mean cross-similarity across all IPBES x IPCC definitions.}
 }
 }
 \description{

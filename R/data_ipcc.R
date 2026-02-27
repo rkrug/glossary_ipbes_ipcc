@@ -87,7 +87,7 @@ load_ipcc <- function(
 #'
 #' @param ipcc_df Output of [load_ipcc()].
 #' @return A [dplyr::tibble()] with columns `term`, `n_reports`,
-#'   `summary_definition`, `ipcc_data` (list-column of report × definition
+#'   `summary_definition`, `ipcc_data` (list-column of report x definition
 #'   tibbles).
 #' @export
 summarise_ipcc <- function(ipcc_df) {
@@ -164,12 +164,12 @@ scrape_ipcc <- function(cache_dir, progress_callback = NULL) {
 
   session_headers <- httr::add_headers(
     `User-Agent` = paste0("glossary.ipbes.ipcc R package/",
-                          utils::packageVersion("glossary.ipbes.ipcc"),
-                          " (https://github.com/ipbes/glossary_ipbes_ipcc)"),
+                          .package_version_safe(),
+                          " (https://github.com/rkrug/glossary_ipbes_ipcc)"),
     `Referer`    = "https://apps.ipcc.ch/glossary/search.php"
   )
 
-  # ---- Helper: clean term name (strip WG suffixes like « WGI,WGII ») ------
+  # ---- Helper: clean term name (strip WG suffixes like << WGI,WGII >>) -----
   .clean_term <- function(raw_text) {
     cleaned <- gsub("\\s*\u00ab[^\u00bb]*\u00bb\\s*", "", raw_text)
     cleaned <- gsub("\\s*<<[^>]*>>\\s*", "", cleaned)

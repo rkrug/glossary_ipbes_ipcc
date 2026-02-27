@@ -27,7 +27,7 @@
 #'     \item{ipcc_data}{List-column: per-report tibble from IPCC.}
 #'     \item{sim_within_ipbes}{Mean pairwise similarity among IPBES definitions.}
 #'     \item{sim_within_ipcc}{Mean pairwise similarity among IPCC definitions.}
-#'     \item{sim_between_all}{Mean cross-similarity across all IPBES × IPCC definitions.}
+#'     \item{sim_between_all}{Mean cross-similarity across all IPBES x IPCC definitions.}
 #'   }
 #' @export
 merge_glossaries <- function(ipbes_summary, ipcc_summary) {
@@ -46,7 +46,7 @@ merge_glossaries <- function(ipbes_summary, ipcc_summary) {
   merged_rows   <- list()
 
   if (nrow(ipcc_summary) > 0) {
-    ipcc_keys <- setNames(seq_len(nrow(ipcc_summary)), ipcc_summary$key)
+    ipcc_keys <- stats::setNames(seq_len(nrow(ipcc_summary)), ipcc_summary$key)
 
     for (i in seq_len(nrow(ipbes_summary))) {
       k <- ipbes_summary$key[i]
@@ -80,7 +80,7 @@ merge_glossaries <- function(ipbes_summary, ipcc_summary) {
       matched_ipbes <- c(matched_ipbes, k)
     }
   } else {
-    # No IPCC data — all IPBES-only
+    # No IPCC data - all IPBES-only
     for (i in seq_len(nrow(ipbes_summary))) {
       merged_rows[[length(merged_rows) + 1]] <- .make_merged_row(
         ipbes_summary[i, ], NULL

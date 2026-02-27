@@ -38,6 +38,31 @@ run_app <- function(
   shiny::runApp(app, ...)
 }
 
+# Resolve package version safely.
+# - Installed package: use utils::packageVersion()
+# - Source deployment (e.g., shinyapps appDir): fall back to DESCRIPTION
+.package_version_safe <- function(package = "glossary.ipbes.ipcc") {
+  ver <- tryCatch(
+    as.character(utils::packageVersion(package)),
+    error = function(e) ""
+  )
+  if (nzchar(ver)) return(ver)
+
+  root <- tryCatch(
+    if (exists(".source_pkg_root", mode = "function")) .source_pkg_root() else "",
+    error = function(e) ""
+  )
+  desc_path <- if (nzchar(root)) file.path(root, "DESCRIPTION") else file.path(getwd(), "DESCRIPTION")
+  if (file.exists(desc_path)) {
+    dcf <- tryCatch(read.dcf(desc_path), error = function(e) NULL)
+    if (!is.null(dcf) && "Version" %in% colnames(dcf)) {
+      ver <- trimws(dcf[1, "Version"])
+    }
+  }
+
+  if (!nzchar(ver)) "unknown" else ver
+}
+
 # Build the runnable shinyApp object with preloaded data.
 .create_shiny_app <- function(cache_dir, enable_live_update) {
   # Ensure cache directory exists
@@ -87,7 +112,7 @@ run_app <- function(
   }
 
   if (!.has_current_table_view_cache(merged)) {
-    message("Preparing table view cache…")
+    message("Preparing table view cache...")
     merged <- .prepare_table_data(merged)
     .save_startup_merged_cache(cache_dir, cache_meta, merged)
   }
@@ -128,7 +153,7 @@ run_app <- function(
 
   list(
     schema      = 1L,
-    app_version = as.character(utils::packageVersion("glossary.ipbes.ipcc")),
+    app_version = .package_version_safe(),
     ipbes       = .file_signature(ipbes_path),
     ipcc        = .file_signature(ipcc_path)
   )

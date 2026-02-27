@@ -1,0 +1,230 @@
+---
+title: "Technical Background: IPBES <-> IPCC Glossary Comparison"
+author: "Rainer M Krug"
+date: "`r format(Sys.Date())`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Technical Background: IPBES <-> IPCC Glossary Comparison}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+![](https://www.sib.swiss/sites/default/files/2023-08/sib_logo2023.png){width=260px}
+
+Copyright (c) 2026 Rainer M Krug (Rainer.Krug@sib.swiss)  
+SIB Swiss Institute of Bioinformatics
+
+# Purpose
+
+This app compares glossary terms and definitions from IPBES and IPCC. It
+aligns terms, computes similarity metrics, and shows word-level differences
+between definitions.
+
+# Data Sources and Artifacts
+
+## Bundled package snapshots
+
+- `inst/extdata/ipbes_glossary.csv`
+- `inst/extdata/ipcc_glossary.csv`
+- `inst/extdata/merged_glossary_cache.rds`
+
+These are shipped with the package and are available at first startup.
+
+## Runtime cache (user cache dir)
+
+The app also uses:
+
+- `tools::R_user_dir("glossary.ipbes.ipcc", "cache")/ipcc_glossary.csv`
+- `tools::R_user_dir("glossary.ipbes.ipcc", "cache")/startup_merged_cache.rds`
+
+`ipcc_glossary.csv` in user cache is created/updated by the `Update IPCC
+Glossary` button (when enabled). It does not modify `inst/extdata`.
+
+# Scraping (IPCC)
+
+The app and `data-raw/prepare_data.R` scrape IPCC using the `search.php`
+endpoint family (all reports):
+
+1. Collect term IDs  
+   `https://apps.ipcc.ch/glossary/ajax/ajax.searchbyindex.php?q=<PREFIX>`  
+   Parse `span.alllink[data-phraseid]`
+2. Fetch full occurrences/definitions  
+   `https://apps.ipcc.ch/glossary/ajax/ajax.searchalloccurance.php?q=<PHRASE_ID>&r=`  
+   Read definition from `dd p` (fallback `dd`)  
+   Read report labels from `data-report` attributes
+3. Save rows (`id`, `prefix`, `term`, `definition`, `reports`, `downloaded_at`)
+
+Implementation details:
+
+- request timeout: 15s
+- request spacing: `Sys.sleep(0.3)`
+- term cleaning strips WG suffixes such as guillemet variants
+
+# Loading and Cleaning
+
+## IPBES
+
+- Reads bundled CSV
+- Harmonizes column names
+- Splits multi-assessment entries to one row per assessment
+- Cleans tags/entities via `clean_html()`
+
+## IPCC
+
+- Loads user-cache CSV first, then bundled snapshot
+- Ensures required columns exist
+- Cleans definitions via `clean_html()`
+- Splits semicolon-separated report list for detail rows
+
+# Merge Strategy
+
+Merge is full-outer over normalized keys:
+
+1. exact match on `normalise_term()`
+2. fallback for unmatched IPBES terms by stripping parenthetical qualifier
+3. keep remaining unmatched rows as IPBES-only or IPCC-only
+
+Output includes:
+
+- labels/counts: `ipbes_n_assessments`, `ipcc_n_reports`
+- detail list-columns: `ipbes_data`, `ipcc_data`
+- similarity metrics:
+  - `sim_within_ipbes`
+  - `sim_within_ipcc`
+  - `sim_between_all`
+
+# Similarity Method
+
+All similarities are computed in-package (no Wikipedia/external semantic API).
+
+## Tokenization
+
+Each definition is:
+
+- lower-cased
+- punctuation-stripped/non-letter filtered
+- split on whitespace
+- stopword-filtered (`STOPWORDS`)
+- represented as term-frequency vector
+
+## Pair similarity
+
+Cosine similarity on term-frequency vectors:
+
+`sim(a,b) = dot(a,b) / (||a|| * ||b||)`
+
+- `0` if no shared tokens
+- `NA` if one side is empty after cleaning
+
+## Displayed metrics
+
+1. **Within IPBES**  
+   Mean pairwise cosine among all IPBES definitions for that term.  
+   `NA` if <2 usable IPBES definitions.
+2. **Within IPCC**  
+   Mean pairwise cosine among all IPCC definitions for that term.  
+   `NA` if <2 usable IPCC definitions.
+3. **Between All Definitions**  
+   Mean cosine over all cross pairs IPBES x IPCC.  
+   `NA` if one side is empty.
+
+Important: duplicate definitions are intentionally retained in these
+calculations, so repeated report/assessment entries still contribute.
+
+# Word-by-Word Diff Method
+
+Word-level differences use Longest Common Subsequence (LCS).
+
+For compared texts `(text_a, text_b)`:
+
+- common words -> `same`
+- words only in `text_a` -> `del` (`<del>`)
+- words only in `text_b` -> `ins` (`<ins>`)
+
+Interpretation of "added":
+
+- Added/inserted means **present on the right/second text (`text_b`)** relative
+  to the left/first text (`text_a`).
+- Deleted means **present only in the left/first text (`text_a`)**.
+
+In the pairwise matrix, row/column labels define this orientation.
+
+# Overview vs Expanded Detail
+
+## Overview table
+
+- one row per merged term
+- columns:
+  - Term
+  - Between similarity
+  - IPBES definitions (with within-IPBES similarity bar)
+  - IPCC definitions (with within-IPCC similarity bar)
+- identical definitions are grouped; associated assessments/reports are listed
+  together (`;`-separated, bold)
+
+## Expanded row
+
+- pairwise similarity matrix over grouped definitions
+- axis order:
+  - IPBES groups first
+  - IPCC groups second
+- upper triangle: score + word diff
+- lower triangle intentionally empty (no duplicate pairs)
+- low-similarity pairs can be marked as too different
+
+# Startup and Caching
+
+Startup load order:
+
+1. packaged merged cache (`inst/extdata/merged_glossary_cache.rds`) if valid
+2. runtime startup cache (`startup_merged_cache.rds`) if signatures match
+3. full rebuild from source CSVs
+
+Table view snippets are precomputed and cached for faster rendering.
+
+# Local vs Hosted Behavior
+
+Default behavior:
+
+- local: live update button enabled
+- shinyapps.io runtime: live update disabled
+
+Override via env var:
+
+- `GLOSSARY_ENABLE_LIVE_UPDATE=1` force enable
+- `GLOSSARY_ENABLE_LIVE_UPDATE=0` force disable
+
+# Running Locally
+
+```r
+glossary.ipbes.ipcc::run_app()
+```
+
+Force-disable live update:
+
+```r
+glossary.ipbes.ipcc::run_app(enable_live_update = FALSE)
+```
+
+or
+
+```r
+Sys.setenv(GLOSSARY_ENABLE_LIVE_UPDATE = "0")
+glossary.ipbes.ipcc::run_app()
+```
+
+Regenerate bundled snapshots for release:
+
+```r
+source("data-raw/prepare_data.R")
+```
+
+This updates:
+
+- `inst/extdata/ipbes_glossary.csv`
+- `inst/extdata/ipcc_glossary.csv`
+- `inst/extdata/merged_glossary_cache.rds`
+

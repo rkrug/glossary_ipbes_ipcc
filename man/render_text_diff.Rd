@@ -9,7 +9,7 @@ render_text_diff(text_a, text_b, label_a = "IPBES", label_b = "IPCC")
 \arguments{
 \item{text_a, text_b}{Character strings to compare.}
 
-\item{label_a, text_b}{Labels prepended to the output (default \code{"IPBES"} and
+\item{label_a, label_b}{Labels prepended to the output (default \code{"IPBES"} and
 \code{"IPCC"}).}
 }
 \value{

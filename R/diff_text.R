@@ -8,7 +8,7 @@
 #' `<ins>` spans for words only in `text_b`.
 #'
 #' @param text_a,text_b Character strings to compare.
-#' @param label_a,text_b Labels prepended to the output (default `"IPBES"` and
+#' @param label_a,label_b Labels prepended to the output (default `"IPBES"` and
 #'   `"IPCC"`).
 #' @return An [htmltools::tag()] object.
 #' @export
@@ -69,7 +69,7 @@ render_text_diff <- function(text_a, text_b, label_a = "IPBES", label_b = "IPCC"
   words[nzchar(words)]
 }
 
-# Standard DP LCS → list of (type, word) operations
+# Standard DP LCS -> list of (type, word) operations
 .lcs_diff <- function(a, b) {
   m <- length(a); n <- length(b)
 

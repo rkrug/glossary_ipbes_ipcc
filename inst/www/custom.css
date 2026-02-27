@@ -282,6 +282,26 @@ h2 {
   vertical-align: top;
 }
 
+/* ---- Attribution -------------------------------------------------------- */
+.app-attribution {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  color: #666;
+  font-size: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+
+.sib-logo {
+  height: 34px;
+  width: auto;
+}
+
+.copyright-note a {
+  color: #337ab7;
+}
+
 .pair-matrix-axis {
   font-size: 0.82rem;
   line-height: 1.25;

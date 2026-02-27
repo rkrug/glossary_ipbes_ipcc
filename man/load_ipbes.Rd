@@ -31,6 +31,6 @@ A \code{\link[dplyr:reexports]{dplyr::tibble()}} with columns:
 }
 }
 \description{
-Reads the bundled IPBES CSV (one row per concept × assessment) and returns a
+Reads the bundled IPBES CSV (one row per concept x assessment) and returns a
 tidy long tibble ready for summarisation.
 }

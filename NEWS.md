@@ -1,5 +1,30 @@
 # glossary.ipbes.ipcc (development version)
 
+# glossary.ipbes.ipcc 0.5.0
+
+## Improvements
+
+* Added detailed technical background documentation as a package vignette:
+  - `vignettes/background.Rmd`
+  - rendered app-accessible HTML at `inst/www/background.html`
+* Added in-app `Info` button opening the technical background in a new tab.
+* Added app branding and attribution:
+  - SIB logo
+  - copyright notice for Rainer M Krug
+* Added repository and issue links:
+  - updated all links to `https://github.com/rkrug/glossary_ipbes_ipcc`
+  - added top-of-app GitHub repo/issues links
+* Added dynamic app version display under the main title:
+  - shown as `Version <DESCRIPTION version>`
+* Removed the `Sort Alphabetically` button and its server wiring to avoid
+  crash-on-click behavior.
+* Addressed package check/documentation quality items:
+  - fixed roxygen argument documentation mismatches
+  - regenerated affected `man/*.Rd` files
+  - normalized R source to ASCII where required
+  - cleaned `.Rbuildignore` entries for local hidden/development directories
+  - aligned DESCRIPTION metadata (`Author`/`Maintainer`, URL/BugReports)
+
 # glossary.ipbes.ipcc 0.2.1
 
 ## Improvements

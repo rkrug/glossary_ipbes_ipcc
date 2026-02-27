@@ -23,12 +23,6 @@ build_server <- function(cache_dir, initial_data, enable_live_update = TRUE) {
       paste0("Between similarity available for ", n_available, " terms")
     })
 
-    # -- Sort button observers -----------------------------------------------
-    shiny::observeEvent(input$sort_alpha, {
-      shiny::updateActionButton(session, "sort_alpha",
-                                class = "btn btn-default active")
-    })
-
     # -- IPCC update module --------------------------------------------------
     if (isTRUE(enable_live_update)) {
       mod_update_ipcc_server("update_ipcc", cache_dir, merged_rv)
