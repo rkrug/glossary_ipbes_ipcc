@@ -26,6 +26,7 @@ mod_table_ui <- function(id) {
 mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
   shiny::moduleServer(id, function(input, output, session) {
     prepared_rv <- shiny::reactiveVal(NULL)
+    detail_registered <- new.env(parent = emptyenv())
 
     shiny::observeEvent(merged_rv(), {
       data <- merged_rv()
@@ -118,27 +119,23 @@ mod_table_server <- function(id, merged_rv, sort_mode, sort_metric, cache_dir) {
       )
     })
 
-    expanded_rows <- shiny::reactive({
-      idx <- reactable::getReactableState("glossary_table", "expanded")
-      if (is.null(idx) || length(idx) == 0) return(integer(0))
-      as.integer(idx)
-    })
-
     shiny::observe({
       data <- display_data()
-      idxs <- expanded_rows()
-      if (is.null(data) || nrow(data) == 0 || length(idxs) == 0) return(invisible(NULL))
-      idxs <- idxs[idxs >= 1 & idxs <= nrow(data)]
-      if (length(idxs) == 0) return(invisible(NULL))
+      if (is.null(data) || nrow(data) == 0) return(invisible(NULL))
 
-      for (idx in idxs) {
+      for (idx in seq_len(nrow(data))) {
+        key <- paste0("detail_row_", idx)
+        if (exists(key, envir = detail_registered, inherits = FALSE)) next
+
         local({
           i <- idx
-          output[[paste0("detail_row_", i)]] <- shiny::renderUI({
+          output[[key]] <- shiny::renderUI({
             row <- display_data()[i, , drop = FALSE]
             .detail_row_html(row)
           })
+          shiny::outputOptions(output, key, suspendWhenHidden = TRUE)
         })
+        assign(key, TRUE, envir = detail_registered)
       }
     })
   })
