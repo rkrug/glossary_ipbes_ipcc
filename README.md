@@ -90,4 +90,6 @@ development.
 
 ## License
 
-MIT © 2026 IPBES TSU Knowledge and Data
+- Source code: MIT © 2026 IPBES TSU Knowledge and Data
+- Documentation and background content: CC BY 4.0
+  (see [LICENSE-CC-BY-4.0.md](LICENSE-CC-BY-4.0.md))
