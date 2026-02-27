@@ -1,0 +1,42 @@
+Package: glossary.ipbes.ipcc
+Title: Compare IPBES and IPCC Glossaries
+Version: 0.1.0
+Authors@R: c(
+    person("IPBES TSU Knowledge and Data", role = c("aut", "cre"),
+           email = "aidin.niamir@senckenberg.de",
+           comment = c(ORCID = "0000-0003-4511-3407")),
+    person("Claude Code", role = "ctb",
+           comment = "AI assistant (claude-sonnet-4-6, Plan mode); https://claude.ai/claude-code"))
+Description: A Shiny application that loads the IPBES biodiversity glossary
+    and the IPCC climate change glossary, merges them by term, and displays
+    definitions side-by-side with text similarity scores and word-level diffs.
+    The IPCC glossary can be refreshed from the live IPCC website within the app.
+    Terms can be sorted alphabetically or by semantic similarity computed via
+    the Wikipedia REST API.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+LazyData: false
+Imports:
+    shiny (>= 1.8.0),
+    reactable (>= 0.4.4),
+    htmltools (>= 0.5.0),
+    httr (>= 1.4.0),
+    rvest (>= 1.0.0),
+    jsonlite (>= 1.8.0),
+    dplyr (>= 1.1.0),
+    tidyr (>= 1.3.0),
+    tibble (>= 3.2.0),
+    tools,
+    utils
+Suggests:
+    shinyjs (>= 2.1.0),
+    shinyWidgets (>= 0.8.0),
+    diffobj (>= 0.3.5),
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+Config/testthat/edition: 3
+URL: https://github.com/ipbes/glossary_ipbes_ipcc
+BugReports: https://github.com/ipbes/glossary_ipbes_ipcc/issues

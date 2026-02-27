@@ -1,0 +1,5 @@
+^data-raw$
+^\.github$
+^LICENSE\.md$
+^README\.Rmd$
+^\.DS_Store$
