@@ -1,5 +1,17 @@
 # glossary.ipbes.ipcc (development version)
 
+## Improvements
+
+* Graph tab usability updates:
+  - removed the `Max edges` control and always displays all filtered edges
+  - added `Focus Previous Tree` / `Focus Next Tree` navigation controls
+  - keeps top-level trees ordered left-to-right by descending tree size
+    (ties resolved alphabetically by root term)
+* Graph readability updates:
+  - increased root-node label prominence and positioned root labels above nodes
+  - preserved label style attributes during proxy selection updates
+* Styling updates for the new graph tree-navigation controls.
+
 # glossary.ipbes.ipcc 0.6.0
 
 ## Improvements

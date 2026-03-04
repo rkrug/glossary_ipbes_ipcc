@@ -202,6 +202,13 @@ h2 {
   color: #6b7280;
 }
 
+.graph-focus-nav {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.45rem;
+  flex-wrap: wrap;
+}
+
 /* ---- Main-table definition preview -------------------------------------- */
 .def-preview {
   position: relative;

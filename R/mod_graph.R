@@ -12,7 +12,7 @@ mod_graph_ui <- function(id) {
   shiny::tagList(
     shiny::fluidRow(
       shiny::column(
-        width = 4,
+        width = 5,
         shiny::sliderInput(
           inputId = ns("min_score"),
           label = "Minimum subsumption score",
@@ -23,7 +23,7 @@ mod_graph_ui <- function(id) {
         )
       ),
       shiny::column(
-        width = 3,
+        width = 4,
         shiny::checkboxInput(
           inputId = ns("best_parent_only"),
           label = "Keep only best parent per child",
@@ -32,19 +32,23 @@ mod_graph_ui <- function(id) {
       ),
       shiny::column(
         width = 3,
-        shiny::numericInput(
-          inputId = ns("max_edges"),
-          label = "Max edges to display",
-          value = 200,
-          min = 20,
-          max = 1000,
-          step = 10
-        )
-      ),
-      shiny::column(
-        width = 2,
         shiny::div(
           style = "margin-top:25px;",
+          shiny::div(
+            class = "graph-focus-nav",
+            shiny::actionButton(
+              inputId = ns("focus_prev_tree"),
+              label = "Focus Previous Tree",
+              icon = shiny::icon("arrow-left"),
+              class = "btn btn-default btn-sm"
+            ),
+            shiny::actionButton(
+              inputId = ns("focus_next_tree"),
+              label = "Focus Next Tree",
+              icon = shiny::icon("arrow-right"),
+              class = "btn btn-default btn-sm"
+            )
+          ),
           shiny::actionButton(
             inputId = ns("zoom_tree"),
             label = "Focus Selected Tree",
@@ -84,6 +88,7 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
     cache_meta_rv <- shiny::reactiveVal(NULL)
     def_lookup_rv <- shiny::reactiveVal(character(0))
     selected_node_rv <- shiny::reactiveVal(NULL)
+    focused_tree_idx_rv <- shiny::reactiveVal(1L)
 
     shiny::observeEvent(merged_rv(), {
       data <- merged_rv()
@@ -152,11 +157,11 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
     plot_edges <- shiny::reactive({
       edges <- hierarchy_edges()
       if (nrow(edges) == 0) return(edges)
+      edges[order(-edges$score), , drop = FALSE]
+    })
 
-      max_edges <- as.integer(input$max_edges)
-      if (is.na(max_edges) || max_edges < 1L) max_edges <- 200L
-      max_edges <- min(max_edges, nrow(edges))
-      edges[order(-edges$score), , drop = FALSE][seq_len(max_edges), , drop = FALSE]
+    ordered_trees <- shiny::reactive({
+      .ordered_roots_with_nodes(plot_edges())
     })
 
     shiny::observeEvent(input$node_click, {
@@ -175,6 +180,72 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
       if (!is.null(selected) && nzchar(selected) && !(selected %in% valid_nodes)) {
         selected_node_rv(NULL)
       }
+    })
+
+    current_tree_index <- shiny::reactive({
+      trees <- ordered_trees()
+      n_trees <- length(trees$roots)
+      if (n_trees == 0) return(NA_integer_)
+
+      selected <- selected_node_rv()
+      if (!is.null(selected) && nzchar(selected)) {
+        idx <- which(vapply(trees$node_sets, function(nodes) selected %in% nodes, logical(1)))
+        if (length(idx) > 0) return(as.integer(idx[[1]]))
+      }
+
+      idx <- as.integer(focused_tree_idx_rv())
+      if (is.na(idx) || idx < 1L) idx <- 1L
+      if (idx > n_trees) idx <- n_trees
+      idx
+    })
+
+    shiny::observe({
+      trees <- ordered_trees()
+      n_trees <- length(trees$roots)
+      if (n_trees == 0) {
+        focused_tree_idx_rv(1L)
+        return(invisible(NULL))
+      }
+      idx <- as.integer(focused_tree_idx_rv())
+      if (is.na(idx) || idx < 1L) idx <- 1L
+      if (idx > n_trees) idx <- n_trees
+      focused_tree_idx_rv(idx)
+    })
+
+    .focus_tree_by_index <- function(idx) {
+      trees <- ordered_trees()
+      n_trees <- length(trees$roots)
+      if (n_trees == 0) return(invisible(NULL))
+
+      idx <- as.integer(idx)
+      if (is.na(idx) || idx < 1L) idx <- 1L
+      if (idx > n_trees) idx <- n_trees
+
+      root <- trees$roots[[idx]]
+      nodes <- trees$node_sets[[idx]]
+      if (!is.null(root) && nzchar(root)) selected_node_rv(root)
+      focused_tree_idx_rv(idx)
+
+      proxy <- visNetwork::visNetworkProxy(session$ns("hierarchy_graph"), session = session)
+      visNetwork::visFit(
+        proxy,
+        nodes = nodes,
+        animation = list(duration = 450, easingFunction = "easeInOutQuad")
+      )
+      invisible(NULL)
+    }
+
+    shiny::observeEvent(input$focus_prev_tree, {
+      idx <- current_tree_index()
+      if (is.na(idx)) return(invisible(NULL))
+      .focus_tree_by_index(max(1L, idx - 1L))
+    })
+
+    shiny::observeEvent(input$focus_next_tree, {
+      idx <- current_tree_index()
+      if (is.na(idx)) return(invisible(NULL))
+      trees <- ordered_trees()
+      .focus_tree_by_index(min(length(trees$roots), idx + 1L))
     })
 
     selected_tree_terms <- shiny::reactive({
@@ -485,6 +556,11 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
   levels_df <- stats::aggregate(level ~ term, data = rbind(parent_levels, child_levels), FUN = min)
   levels_df <- levels_df[match(node_terms, levels_df$term), , drop = FALSE]
 
+  # Keep top-level trees ordered left-to-right by decreasing tree size;
+  # ties are resolved alphabetically by root term.
+  node_terms <- .order_terms_by_root_priority(edges, node_terms, levels_df)
+  levels_df <- levels_df[match(node_terms, levels_df$term), , drop = FALSE]
+
   deg_tab <- table(c(edges$parent_term, edges$child_term))
   node_degree <- as.numeric(deg_tab[node_terms])
   node_degree[is.na(node_degree)] <- 1
@@ -494,6 +570,10 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
     grDevices::hcl.colors(length(level_vals), "Teal"),
     as.character(level_vals)
   )
+
+  roots <- setdiff(unique(edges$parent_term), unique(edges$child_term))
+  if (length(roots) == 0) roots <- unique(edges$parent_term)
+  is_root <- node_terms %in% roots
 
   node_title <- vapply(node_terms, function(term) {
     definition <- if (!is.null(definition_lookup) && term %in% names(definition_lookup)) {
@@ -520,10 +600,16 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
     label = node_terms,
     title = node_title,
     level = levels_df$level,
-    value = pmin(40, 6 + node_degree),
+    value = ifelse(is_root, pmax(70, pmin(110, 10 + node_degree)), pmin(40, 6 + node_degree)),
     color.background = unname(level_cols[as.character(levels_df$level)]),
     color.border = "#334155",
     font.color = "#111827",
+    font.size = ifelse(is_root, 34, 22),
+    font.vadjust = ifelse(is_root, -30, 0),
+    scaling.label.min = ifelse(is_root, 20, 18),
+    scaling.label.max = ifelse(is_root, 38, 36),
+    scaling.label.maxVisible = ifelse(is_root, 44, 40),
+    scaling.label.drawThreshold = 0,
     stringsAsFactors = FALSE
   )
 
@@ -556,6 +642,54 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
     nodes = nodes,
     edges = edge_df,
     edge_source = edges
+  )
+}
+
+.order_terms_by_root_priority <- function(edges, node_terms, levels_df) {
+  if (is.null(edges) || nrow(edges) == 0 || length(node_terms) == 0) {
+    return(node_terms)
+  }
+
+  trees <- .ordered_roots_with_nodes(edges)
+  roots <- trees$roots
+  root_nodes <- trees$node_sets
+  if (length(roots) == 0) return(node_terms)
+
+  priority <- setNames(rep(length(roots) + 1L, length(node_terms)), node_terms)
+  for (i in seq_along(roots)) {
+    covered <- root_nodes[[i]]
+    matched <- intersect(node_terms, covered)
+    if (length(matched) == 0) next
+    priority[matched] <- pmin(priority[matched], i)
+  }
+
+  node_df <- data.frame(
+    term = node_terms,
+    level = levels_df$level[match(node_terms, levels_df$term)],
+    priority = as.integer(priority[node_terms]),
+    stringsAsFactors = FALSE
+  )
+  node_df <- node_df[order(node_df$priority, node_df$level, node_df$term), , drop = FALSE]
+  node_df$term
+}
+
+.ordered_roots_with_nodes <- function(edges) {
+  empty <- list(roots = character(0), node_sets = list())
+  if (is.null(edges) || nrow(edges) == 0) return(empty)
+
+  roots <- setdiff(unique(edges$parent_term), unique(edges$child_term))
+  if (length(roots) == 0) roots <- unique(edges$parent_term)
+  roots <- sort(as.character(roots))
+  if (length(roots) == 0) return(empty)
+
+  child_of <- split(edges$child_term, edges$parent_term)
+  node_sets <- lapply(roots, function(root) unique(c(root, .graph_reachable(root, child_of))))
+  sizes <- vapply(node_sets, length, integer(1))
+  ord <- order(-sizes, roots)
+
+  list(
+    roots = roots[ord],
+    node_sets = node_sets[ord]
   )
 }
 
@@ -592,7 +726,15 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
     ) |>
     visNetwork::visNodes(
       shape = "dot",
-      font = list(size = 14, face = "Segoe UI")
+      font = list(size = 14, face = "Segoe UI"),
+      scaling = list(
+        label = list(
+          enabled = TRUE,
+          min = 10,
+          max = 24,
+          drawThreshold = 0
+        )
+      )
     ) |>
     visNetwork::visEdges(
       arrows = list(to = list(enabled = TRUE, scaleFactor = 0.5)),
@@ -629,7 +771,9 @@ mod_graph_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL
     ))
   }
 
-  nodes <- graph_data$nodes[, c("id", "value", "color.background", "color.border", "font.color"), drop = FALSE]
+  nodes <- graph_data$nodes[, c(
+    "id", "value", "color.background", "color.border", "font.color", "font.size", "font.vadjust"
+  ), drop = FALSE]
   edges <- graph_data$edges[, c("id", "width", "color.color", "color.opacity"), drop = FALSE]
 
   if (is.null(selected_node) || !nzchar(selected_node) || !(selected_node %in% nodes$id)) {
