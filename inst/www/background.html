@@ -13,7 +13,7 @@
 
 <meta name="date" content="2026-03-04" />
 
-<title>Technical Background: IPBES &lt;-&gt; IPCC Glossary Comparison</title>
+<title>Technical Background: IPBES &lt;-&gt; IPCC Glossary Compare and Explore Apps</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -351,7 +351,7 @@ display: none;
 
 
 <h1 class="title toc-ignore">Technical Background: IPBES &lt;-&gt; IPCC
-Glossary Comparison</h1>
+Glossary Compare and Explore Apps</h1>
 <h4 class="author">Rainer M Krug</h4>
 <h4 class="date">2026-03-04</h4>
 
@@ -416,9 +416,17 @@ Locally</a></li>
 SIB Swiss Institute of Bioinformatics</p>
 <div id="purpose" class="section level1">
 <h1>Purpose</h1>
-<p>This app compares glossary terms and definitions from IPBES and IPCC.
-It aligns terms, computes similarity metrics, and shows word-level
-differences between definitions.</p>
+<p>This package provides two Shiny apps that use shared glossary
+data:</p>
+<ul>
+<li>comparison app (<code>run_app()</code>)</li>
+<li>glossary explorer app (<code>run_glossary()</code>)</li>
+</ul>
+<p>Both apps work with glossary terms and definitions from IPBES and
+IPCC. The comparison app aligns terms, computes similarity metrics,
+shows word-level differences, and visualizes directed term hierarchy.
+The glossary explorer app provides source-filtered lookup with linked
+in-definition term navigation.</p>
 </div>
 <div id="data-sources-and-artifacts" class="section level1">
 <h1>Data Sources and Artifacts</h1>
@@ -744,7 +752,7 @@ content.</p>
 </div>
 <div id="local-vs-hosted-behavior" class="section level1">
 <h1>Local vs Hosted Behavior</h1>
-<p>Default behavior:</p>
+<p>Default behavior (comparison app):</p>
 <ul>
 <li>local: live update button enabled</li>
 <li>shinyapps.io runtime: live update disabled</li>
@@ -757,12 +765,23 @@ content.</p>
 </div>
 <div id="running-locally" class="section level1">
 <h1>Running Locally</h1>
-<pre class="r"><code>glossary.ipbes.ipcc::run_app()</code></pre>
-<p>Force-disable live update:</p>
+<pre class="r"><code># Comparison app
+glossary.ipbes.ipcc::run_app()
+
+# Glossary explorer app
+glossary.ipbes.ipcc::run_glossary()</code></pre>
+<p>Force-disable live update (comparison app):</p>
 <pre class="r"><code>glossary.ipbes.ipcc::run_app(enable_live_update = FALSE)</code></pre>
 <p>or</p>
 <pre class="r"><code>Sys.setenv(GLOSSARY_ENABLE_LIVE_UPDATE = &quot;0&quot;)
 glossary.ipbes.ipcc::run_app()</code></pre>
+<p>Deploy entrypoints for shinyapps.io:</p>
+<ul>
+<li>comparison app: <code>app_compare.R</code> via
+<code>scripts/deploy_shinyapps_compare.R</code></li>
+<li>glossary explorer: <code>app_glossary.R</code> via
+<code>scripts/deploy_shinyapps_glossary.R</code></li>
+</ul>
 <p>Regenerate bundled snapshots for release:</p>
 <pre class="r"><code>source(&quot;data-raw/prepare_data.R&quot;)</code></pre>
 <p>This updates:</p>

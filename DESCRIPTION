@@ -1,6 +1,6 @@
 Package: glossary.ipbes.ipcc
 Title: Compare IPBES and IPCC Glossaries
-Version: 0.7.0
+Version: 0.8.0
 Author: IPBES TSU Knowledge and Data [aut, cre] (ORCID:
     <https://orcid.org/0000-0003-4511-3407>), Claude Code [ctb], Codex [ctb]
 Maintainer: IPBES TSU Knowledge and Data <aidin.niamir@senckenberg.de>
@@ -11,14 +11,17 @@ Authors@R: c(
     person("Claude Code", role = "ctb",
            comment = "AI assistant (claude-sonnet-4-6, Plan mode); https://claude.ai/claude-code"),
     person("Codex", role = "ctb",
-           comment = "AI assistant (Codex v0.7.0, model GPT-5, Default mode); https://openai.com"))
-Description: A Shiny application that loads the IPBES biodiversity glossary
-    and the IPCC climate change glossary, merges them by term, and displays
-    definitions side-by-side with text similarity scores and word-level diffs.
-    The IPCC glossary can be refreshed from the live IPCC website within the app,
-    with hosted-safe mode available for shinyapps.io deployments.
+           comment = "AI assistant (Codex v0.8.0, model GPT-5, Default mode); https://openai.com"))
+Description: Shiny applications to compare and explore the IPBES biodiversity
+    glossary and the IPCC climate change glossary. The comparison app aligns
+    terms, computes similarity scores, shows word-level differences, and
+    visualizes a directed term hierarchy. The glossary explorer app provides
+    source-specific term lookup with linked in-definition navigation. Hosted-safe
+    deployment modes are included for shinyapps.io.
 License: MIT + file LICENSE
 Encoding: UTF-8
+Depends:
+    R (>= 4.1.0)
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 LazyData: false

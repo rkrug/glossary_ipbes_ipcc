@@ -8,22 +8,22 @@ This app was created iteratively with both **Claude Code** and **Codex**
 assistance. Contributor details, model/mode metadata, and session history are
 documented in `CONTRIBUTORS.md` and `AI_PROMPTS.md`.
 
-An R package containing a Shiny app for comparing the
+An R package containing two Shiny apps for comparing and exploring the
 [IPBES](https://www.ipbes.net/) biodiversity glossary and the
-[IPCC](https://www.ipcc.ch/) climate change glossary side-by-side.
+[IPCC](https://www.ipcc.ch/) climate change glossary.
 
 ## Features
 
-- **Side-by-side comparison** table with one row per glossary term
-- **Expandable rows**: click any term to see definitions broken down by IPBES
-  assessment and IPCC report
-- **Word-level text diff**: colour-coded differences between IPBES and IPCC
-  definitions
-- **Similarity scoring**: within-source and between-source text similarity
-- **Sort alphabetically** (default) and sortable similarity columns
-- **Update IPCC glossary** button that re-scrapes the live
-  [IPCC Glossary website](https://apps.ipcc.ch/glossary/) with real-time
-  progress feedback
+- **Comparison app** (`run_app()`):
+  - side-by-side glossary comparison with grouped definitions
+  - within-source and between-source similarity metrics
+  - word-level differences and directed term hierarchy graph
+  - optional live IPCC refresh (hosted-safe behavior on shinyapps.io)
+- **Glossary explorer app** (`run_glossary()`):
+  - source selector (`IPBES`, `IPCC`, `Both`) with autocomplete term lookup
+  - in-definition highlighting of glossary terms
+  - hover to preview definitions and click highlighted terms to navigate
+  - case-insensitive term matching and source-specific rendering
 
 ## Installation
 
@@ -36,12 +36,21 @@ remotes::install_github("rkrug/glossary_ipbes_ipcc")
 ## Usage
 
 ```r
+# Comparison app
 glossary.ipbes.ipcc::run_app()
+
+# Glossary explorer app
+glossary.ipbes.ipcc::run_glossary()
 ```
 
 The app stores its cache (updated IPCC data, merged table cache) in
 `tools::R_user_dir("glossary.ipbes.ipcc", "cache")`.  No manual setup is
 required.
+
+## Hosted apps
+
+- Comparison app: https://rmkrug.shinyapps.io/glossary-ipbes-ipcc/
+- Glossary explorer app: https://ipbes-data.shinyapps.io/glossary-ipbes-ipcc-explorer/
 
 ## Detailed technical background
 
@@ -51,16 +60,25 @@ see [BACKGROUND.md](BACKGROUND.md).
 
 ## Deploying to shinyapps.io
 
-Use the deploy helper script:
+Use the compare-app deploy helper:
 
 ```bash
 SHINYAPPS_ACCOUNT=... SHINYAPPS_TOKEN=... SHINYAPPS_SECRET=... \
-Rscript scripts/deploy_shinyapps.R
+Rscript scripts/deploy_shinyapps_compare.R
 ```
 
-This deploys `app.R` and sets hosted-safe mode by default
+This deploys `app_compare.R` and sets hosted-safe mode by default
 through runtime detection on shinyapps.io, which disables live IPCC scraping
 for hosted instances. Local runs keep live update enabled by default.
+
+Use the glossary-explorer deploy helper:
+
+```bash
+SHINYAPPS_ACCOUNT=... SHINYAPPS_APP_NAME=... \
+Rscript scripts/deploy_shinyapps_glossary.R
+```
+
+This deploys `app_glossary.R` as a separate shinyapps.io app.
 
 ## Data sources
 

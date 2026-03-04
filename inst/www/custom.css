@@ -464,3 +464,83 @@ h2 {
   font-size: 0.78rem;
   color: #666;
 }
+
+/* ---- Glossary explorer app ----------------------------------------------- */
+.glossary-explorer-help {
+  margin: 0.4rem 0 0.9rem 0;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.glossary-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.glossary-source-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0.75rem 0.9rem;
+}
+
+.glossary-source-section h4 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.16rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.glossary-source-caption {
+  margin: 0 0 0.6rem 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.glossary-def-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 0.55rem 0.7rem;
+  margin-bottom: 0.55rem;
+}
+
+.glossary-def-head {
+  margin-bottom: 0.35rem;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.glossary-def-body {
+  color: #111827;
+  font-size: 1rem;
+  line-height: 1.48;
+}
+
+.glossary-empty {
+  color: #6b7280;
+  font-size: 0.95rem;
+  padding: 0.25rem 0.1rem;
+}
+
+.glossary-term-link {
+  color: #1d4ed8;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.glossary-term-link:hover,
+.glossary-term-link:focus {
+  color: #1e40af;
+  background: #dbeafe;
+  border-radius: 3px;
+  outline: none;
+}

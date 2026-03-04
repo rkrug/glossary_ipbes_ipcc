@@ -1,23 +1,24 @@
-# Deploy helper for shinyapps.io
+# Deploy helper for shinyapps.io (Glossary Explorer app)
 #
 # Usage:
-#   SHINYAPPS_ACCOUNT=... SHINYAPPS_TOKEN=... SHINYAPPS_SECRET=... \
-#   Rscript scripts/deploy_shinyapps.R
+#   Rscript scripts/deploy_shinyapps_glossary.R
 #
-# Optional:
-#   SHINYAPPS_APP_NAME=glossary-ipbes-ipcc
+# Optional environment variables:
+#   SHINYAPPS_ACCOUNT     (default: rmkrug)
+#   SHINYAPPS_APP_NAME    (default: glossary-ipbes-ipcc-explorer)
 
 if (!requireNamespace("rsconnect", quietly = TRUE)) {
   stop("Package 'rsconnect' is required. Install with install.packages('rsconnect').")
 }
 
-account <- "rmkrug"
-app_name <- "glossary-ipbes-ipcc"
+account <- trimws(Sys.getenv("SHINYAPPS_ACCOUNT", "rmkrug"))
+app_name <- trimws(Sys.getenv("SHINYAPPS_APP_NAME", "glossary-ipbes-ipcc-explorer"))
 
 if (!nzchar(account)) {
-  stop(
-    "Missing shinyapps.io credentials. Set SHINYAPPS_ACCOUNT, SHINYAPPS_TOKEN, and SHINYAPPS_SECRET."
-  )
+  stop("Missing shinyapps.io account. Set SHINYAPPS_ACCOUNT.")
+}
+if (!nzchar(app_name)) {
+  stop("Missing app name. Set SHINYAPPS_APP_NAME.")
 }
 
 required_cache_files <- c(
@@ -37,7 +38,7 @@ if (length(missing_cache_files) > 0) {
 
 rsconnect::deployApp(
   appDir        = ".",
-  appPrimaryDoc = "app.R",
+  appPrimaryDoc = "app_glossary.R",
   appName       = app_name,
   account       = account,
   forceUpdate   = TRUE

@@ -6,6 +6,7 @@
 ^\.cache_startup_bench$
 ^\.claude$
 ^BACKGROUND\.md$
+^rsconnect$
 ^\.\.Rcheck$
 ^.*[.]Rcheck$
 ^glossary[.]ipbes[.]ipcc_.*[.]tar[.]gz$

@@ -417,6 +417,58 @@ run_app()
 
 ---
 
+## Session 8 — 2026-03-04
+
+**Tool**: Codex
+**Model**: GPT-5
+**Mode**: Default mode
+
+### Main requests handled
+
+- Added and refined a second Shiny app for focused glossary exploration:
+  - `run_glossary()` API entry point
+  - source selector (`IPBES`, `IPCC`, `Both`)
+  - source-scoped term selector behavior
+  - case-insensitive term resolution and de-duplication
+  - click-through navigation via highlighted in-definition terms
+- Updated glossary explorer app metadata and branding:
+  - title: `IPBES and IPCC Glossary explorer`
+  - dynamic package version display from `DESCRIPTION`
+  - glossary/repo/issues links
+  - copyright + SIB logo attribution
+- Split shinyapps deployment entrypoints into explicit compare/explorer files:
+  - renamed top-level compare entrypoint `app.R` -> `app_compare.R`
+  - added `app_glossary.R`
+  - renamed compare deploy helper to `scripts/deploy_shinyapps_compare.R`
+  - added glossary deploy helper `scripts/deploy_shinyapps_glossary.R`
+- Prepared release metadata and docs for version `0.8.0`.
+
+### Files substantially updated in this session
+
+- `R/app_glossary.R`
+- `R/app.R`
+- `NAMESPACE`
+- `man/run_glossary.Rd`
+- `app_compare.R`
+- `app_glossary.R`
+- `scripts/deploy_shinyapps_compare.R`
+- `scripts/deploy_shinyapps_glossary.R`
+- `inst/www/custom.css`
+- `DESCRIPTION`
+- `README.md`
+- `NEWS.md`
+- `CONTRIBUTORS.md`
+- `BACKGROUND.md`
+- `vignettes/background.Rmd`
+- `inst/www/background.html`
+- `AI_PROMPTS.md`
+
+### Release target
+
+- Package release prepared as `0.8.0` (no commit yet)
+
+---
+
 ## How to continue development with another AI agent
 
 Provide this file and the approved plan at

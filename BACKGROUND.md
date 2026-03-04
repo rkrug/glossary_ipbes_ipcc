@@ -1,14 +1,21 @@
-# Detailed Background: IPBES <-> IPCC Glossary Comparison
+# Detailed Background: IPBES <-> IPCC Glossary Compare and Explore Apps
 
 ## 1. Purpose
 
-This app compares glossary terms and definitions from:
+This package provides two Shiny apps that use shared glossary data:
+
+- comparison app (`run_app()`)
+- glossary explorer app (`run_glossary()`)
+
+Both apps work with glossary terms and definitions from:
 
 - IPBES glossary
 - IPCC glossary
 
-It aligns terms, computes similarity metrics, and shows word-level differences
-between definitions.
+The comparison app aligns terms, computes similarity metrics, shows word-level
+differences, and visualizes directed term hierarchy.
+The glossary explorer app provides source-filtered lookup with linked
+in-definition term navigation.
 
 ## 2. Data Sources and Artifacts
 
@@ -286,7 +293,7 @@ Cache is invalidated by a fingerprint over merged term/definition content.
 
 ## 11. Local vs Hosted Behavior
 
-By default:
+By default (comparison app):
 
 - Local run: live IPCC update button enabled
 - shinyapps.io hosted runtime: live update disabled ("Hosted mode" label shown)
@@ -296,18 +303,22 @@ Override via env var:
 - `GLOSSARY_ENABLE_LIVE_UPDATE=1` -> force enable
 - `GLOSSARY_ENABLE_LIVE_UPDATE=0` -> force disable
 
-Hosted-safe deploy script (`scripts/deploy_shinyapps.R`) sets hosted default
+Hosted-safe deploy script (`scripts/deploy_shinyapps_compare.R`) sets hosted default
 to disabled unless explicitly overridden.
 
 ## 12. Running Locally
 
-### 11.1 Run app (normal)
+### 11.1 Run apps
 
 ```r
+# Comparison app
 glossary.ipbes.ipcc::run_app()
+
+# Glossary explorer app
+glossary.ipbes.ipcc::run_glossary()
 ```
 
-### 11.2 Run app and force update behavior
+### 11.2 Run comparison app and force update behavior
 
 ```r
 # disable update button
@@ -318,7 +329,16 @@ Sys.setenv(GLOSSARY_ENABLE_LIVE_UPDATE = "0")
 glossary.ipbes.ipcc::run_app()
 ```
 
-### 11.3 Refresh packaged snapshots for release
+### 11.3 Deploy entrypoints for shinyapps.io
+
+- Comparison app:
+  - entrypoint: `app_compare.R`
+  - deploy script: `scripts/deploy_shinyapps_compare.R`
+- Glossary explorer app:
+  - entrypoint: `app_glossary.R`
+  - deploy script: `scripts/deploy_shinyapps_glossary.R`
+
+### 11.4 Refresh packaged snapshots for release
 
 For package-maintained snapshots (not just runtime cache):
 

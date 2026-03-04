@@ -1,3 +1,27 @@
+# glossary.ipbes.ipcc 0.8.0
+
+## Improvements
+
+* Added a second Shiny app entry point: `run_glossary()`.
+  - focused glossary explorer workflow with source selector (`IPBES`, `IPCC`, `Both`)
+  - term autocomplete with stable selection behavior
+  - case-insensitive term resolution for typed and clicked terms
+  - in-definition term highlighting with hover tooltips and click-to-navigate
+  - source-specific rendering so single-source mode does not show cross-source labels
+* Added dedicated shinyapps.io deployment entrypoints and scripts:
+  - `app_compare.R` (renamed from top-level `app.R`)
+  - `app_glossary.R` (new)
+  - `scripts/deploy_shinyapps_compare.R`
+  - `scripts/deploy_shinyapps_glossary.R`
+* Updated glossary explorer UI metadata and branding:
+  - title updated to `IPBES and IPCC Glossary explorer`
+  - dynamic package version display (`Version <DESCRIPTION version>`)
+  - links to IPBES/IPCC glossary pages, GitHub repo, and issue tracker
+  - SIB logo and copyright attribution block aligned with the comparison app
+* Updated package documentation and release metadata for the two-app setup.
+* Declared minimum R version requirement (`R >= 4.1.0`) in `DESCRIPTION`
+  (package code uses base pipe syntax).
+
 # glossary.ipbes.ipcc 0.7.0
 
 ## Improvements

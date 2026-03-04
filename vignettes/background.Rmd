@@ -1,5 +1,5 @@
 ---
-title: "Technical Background: IPBES <-> IPCC Glossary Comparison"
+title: "Technical Background: IPBES <-> IPCC Glossary Compare and Explore Apps"
 author: "Rainer M Krug"
 date: "`r format(Sys.Date())`"
 output:
@@ -7,7 +7,7 @@ output:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Technical Background: IPBES <-> IPCC Glossary Comparison}
+  %\VignetteIndexEntry{Technical Background: IPBES <-> IPCC Glossary Compare and Explore Apps}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -19,9 +19,15 @@ SIB Swiss Institute of Bioinformatics
 
 # Purpose
 
-This app compares glossary terms and definitions from IPBES and IPCC. It
-aligns terms, computes similarity metrics, and shows word-level differences
-between definitions.
+This package provides two Shiny apps that use shared glossary data:
+
+- comparison app (`run_app()`)
+- glossary explorer app (`run_glossary()`)
+
+Both apps work with glossary terms and definitions from IPBES and IPCC.
+The comparison app aligns terms, computes similarity metrics, shows word-level
+differences, and visualizes directed term hierarchy. The glossary explorer app
+provides source-filtered lookup with linked in-definition term navigation.
 
 # Data Sources and Artifacts
 
@@ -285,7 +291,7 @@ Cache is invalidated by a fingerprint over merged term/definition content.
 
 # Local vs Hosted Behavior
 
-Default behavior:
+Default behavior (comparison app):
 
 - local: live update button enabled
 - shinyapps.io runtime: live update disabled
@@ -298,10 +304,14 @@ Override via env var:
 # Running Locally
 
 ```r
+# Comparison app
 glossary.ipbes.ipcc::run_app()
+
+# Glossary explorer app
+glossary.ipbes.ipcc::run_glossary()
 ```
 
-Force-disable live update:
+Force-disable live update (comparison app):
 
 ```r
 glossary.ipbes.ipcc::run_app(enable_live_update = FALSE)
@@ -313,6 +323,11 @@ or
 Sys.setenv(GLOSSARY_ENABLE_LIVE_UPDATE = "0")
 glossary.ipbes.ipcc::run_app()
 ```
+
+Deploy entrypoints for shinyapps.io:
+
+- comparison app: `app_compare.R` via `scripts/deploy_shinyapps_compare.R`
+- glossary explorer: `app_glossary.R` via `scripts/deploy_shinyapps_glossary.R`
 
 Regenerate bundled snapshots for release:
 

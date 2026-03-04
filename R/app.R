@@ -71,12 +71,35 @@ run_app <- function(
 
 # Build the runnable shinyApp object with preloaded data.
 .create_shiny_app <- function(cache_dir, enable_live_update) {
-  # Ensure cache directory exists
+  .ensure_cache_dir(cache_dir)
+  merged <- .load_merged_data(cache_dir, prepare_table_cache = TRUE)
+  .register_www_assets()
+
+  # ---- Launch app ----------------------------------------------------------
+  app <- shiny::shinyApp(
+    ui     = build_ui(enable_live_update = enable_live_update),
+    server = build_server(
+      cache_dir = cache_dir,
+      initial_data = merged,
+      enable_live_update = enable_live_update
+    )
+  )
+
+  app
+}
+
+# Ensure cache directory exists.
+.ensure_cache_dir <- function(cache_dir) {
   if (!dir.exists(cache_dir)) {
     dir.create(cache_dir, recursive = TRUE)
   }
+  invisible(cache_dir)
+}
 
-  # ---- Load merged data (bundled cache -> startup cache -> rebuild) ---------
+# Load merged glossary data with cache-first startup behavior.
+.load_merged_data <- function(cache_dir, prepare_table_cache = TRUE) {
+  .ensure_cache_dir(cache_dir)
+
   bundled_ipcc <- .pkg_file("extdata", "ipcc_glossary.csv")
   bundled_ipbes <- .pkg_file("extdata", "ipbes_glossary.csv")
   ipcc_source  <- resolve_ipcc_source_path(cache_dir, bundled_ipcc)
@@ -117,7 +140,7 @@ run_app <- function(
     message("Loaded merged glossary from startup cache.")
   }
 
-  if (!.has_current_table_view_cache(merged)) {
+  if (isTRUE(prepare_table_cache) && !.has_current_table_view_cache(merged)) {
     message("Preparing table view cache...")
     merged <- .prepare_table_data(merged)
     .save_startup_merged_cache(cache_dir, cache_meta, merged)
@@ -131,22 +154,19 @@ run_app <- function(
     n_ipbes, n_ipcc, n_matched
   ))
 
-  # ---- Serve static assets from inst/www -----------------------------------
+  merged
+}
+
+# Serve static assets from inst/www once per R session.
+.register_www_assets <- function() {
   www_path <- .pkg_file("www")
   if (!nzchar(www_path)) stop("Could not locate inst/www assets.")
-  shiny::addResourcePath("custom", www_path)
 
-  # ---- Launch app ----------------------------------------------------------
-  app <- shiny::shinyApp(
-    ui     = build_ui(enable_live_update = enable_live_update),
-    server = build_server(
-      cache_dir = cache_dir,
-      initial_data = merged,
-      enable_live_update = enable_live_update
-    )
-  )
-
-  app
+  existing <- shiny::resourcePaths()
+  if (!("custom" %in% names(existing))) {
+    shiny::addResourcePath("custom", www_path)
+  }
+  invisible(www_path)
 }
 
 # Build metadata for startup cache invalidation based on source files.
