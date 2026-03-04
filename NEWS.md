@@ -1,5 +1,31 @@
 # glossary.ipbes.ipcc (development version)
 
+# glossary.ipbes.ipcc 0.6.0
+
+## Improvements
+
+* Added directed term hierarchy scoring (`compute_term_hierarchy()`) that builds
+  parent -> child edges using lexical subsumption, definition containment, and
+  cosine definition similarity.
+* Added a new `Graph` tab with interactive hierarchy visualization:
+  - node labels and hover tooltips with merged definitions
+  - click-to-select tree highlighting
+  - non-linked node/edge grey-out
+  - "Focus Selected Tree" control to fit the selected connected subtree
+* Added cross-tab highlighting so graph selections are reflected in the main
+  glossary table.
+* Added hierarchy edge caching with source fingerprint invalidation to avoid
+  recomputing hierarchy scores on each refresh.
+* Improved graph readability and behavior:
+  - increased horizontal spacing (`nodeSpacing`/`treeSpacing`)
+  - preserved pan/zoom during selection style updates via proxy updates
+  - fixed module-namespaced proxy targeting for robust highlighting/fit actions
+* Added explicit documentation that tokenization uses no stemming/lemmatization
+  (for example, `impact` and `impacts` are treated as different tokens) in:
+  - `R/similarity_text.R` docs
+  - `BACKGROUND.md`
+  - `vignettes/background.Rmd` and rendered `inst/www/background.html`
+
 # glossary.ipbes.ipcc 0.5.0
 
 ## Improvements

@@ -261,6 +261,67 @@ run_app()
 
 ---
 
+## Session 5 — 2026-03-04
+
+**Tool**: Codex
+**Model**: GPT-5
+**Mode**: Default mode
+
+### Main requests handled
+
+- Add a directed term hierarchy model for matched terms.
+- Add an interactive `Graph` tab to visualize hierarchy edges.
+- Improve graph startup/runtime performance with hierarchy edge caching.
+- Add node-selection behavior:
+  - highlight selected connected tree
+  - grey out non-linked nodes/edges
+  - highlight associated rows in the main table
+- Add explicit tree focus control (`Focus Selected Tree`).
+- Fix graph regressions:
+  - robust click event handling
+  - correct namespaced `visNetworkProxy()` updates inside module server
+  - preserve pan/zoom while updating selection styles
+- Update background technical docs to clarify tokenization behavior and graph
+  hierarchy method.
+
+### Key implementation decisions
+
+- Directed hierarchy score:
+  - `score = 0.55 * lex_sub + 0.25 * def_contain + 0.20 * def_sim`
+- Candidate gating:
+  - parent must be shorter (`parent_token_n < child_token_n`)
+  - lexical/definition containment gate before full score
+- Cache-first graph approach:
+  - compute full hierarchy once (`min_score = 0`, no parent pruning)
+  - cache edges in user cache dir
+  - filter thresholds interactively in-memory
+- Interaction architecture:
+  - shared `highlight_terms_rv` between graph and table modules
+  - graph styling updates via `visNetworkProxy()` (`visUpdateNodes/Edges`)
+  - table row highlighting by selected connected terms
+
+### Files substantially updated in this session
+
+- `R/hierarchy_terms.R` (new)
+- `R/mod_graph.R` (new)
+- `R/server.R`
+- `R/mod_table.R`
+- `R/ui.R`
+- `R/similarity_text.R`
+- `inst/www/custom.css`
+- `BACKGROUND.md`
+- `vignettes/background.Rmd`
+- `inst/www/background.html`
+- `DESCRIPTION`
+- `NEWS.md`
+- `AI_PROMPTS.md`
+
+### Release target
+
+- Package release prepared as `0.6.0`
+
+---
+
 ## How to continue development with another AI agent
 
 Provide this file and the approved plan at

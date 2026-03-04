@@ -108,6 +108,7 @@ Each definition is:
 - punctuation-stripped/non-letter filtered
 - split on whitespace
 - stopword-filtered (`STOPWORDS`)
+- no stemming/lemmatization (e.g., `impact` and `impacts` remain different tokens)
 - represented as term-frequency vector
 
 ## Pair similarity
@@ -185,6 +186,48 @@ Startup load order:
 
 Table view snippets are precomputed and cached for faster rendering.
 
+# Directed Hierarchy Graph (Graph Tab)
+
+The app includes a dedicated `Graph` tab that estimates and visualizes a
+directed parent -> child hierarchy among matched terms.
+
+## Directed subsumption score
+
+For candidate edge `(parent, child)`, the score is:
+
+`score = 0.55 * lex_sub + 0.25 * def_contain + 0.20 * def_sim`
+
+Where:
+
+- `lex_sub`: fraction of parent term tokens also present in the child term
+- `def_contain`: fraction of parent term tokens present in the child definition text
+- `def_sim`: cosine similarity between combined parent/child definition texts
+
+Candidate gates:
+
+- `parent_token_n < child_token_n`
+- must pass lexical or definition-containment gate before final scoring
+
+Default display threshold in the graph UI is `min_score = 0.65`.
+
+## Graph interaction model
+
+- Click a node to select its connected tree (ancestors + descendants).
+- Selected tree remains colored; non-linked nodes/edges are greyed.
+- Click background to clear selection.
+- Use `Focus Selected Tree` to fit/pan/zoom to the selected tree.
+
+Selection is shared with the main table: selected graph terms are highlighted in
+the table rows.
+
+## Graph caching
+
+Hierarchy edge scoring is cached in:
+
+- `tools::R_user_dir("glossary.ipbes.ipcc", "cache")/hierarchy_edges_cache.rds`
+
+Cache is invalidated by a fingerprint over merged term/definition content.
+
 # Local vs Hosted Behavior
 
 Default behavior:
@@ -227,4 +270,3 @@ This updates:
 - `inst/extdata/ipbes_glossary.csv`
 - `inst/extdata/ipcc_glossary.csv`
 - `inst/extdata/merged_glossary_cache.rds`
-

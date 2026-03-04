@@ -98,6 +98,7 @@ For each definition text:
 - remove non-letters (`[^a-z ]`)
 - split on whitespace
 - remove stopwords (internal `STOPWORDS` list)
+- no stemming/lemmatization (for example, `impact` and `impacts` are treated as different tokens)
 - keep term frequencies
 
 ### 6.2 Pair similarity
@@ -186,7 +187,49 @@ faster rendering.
 
 This is why current startup is much faster than full recompute on every load.
 
-## 10. Local vs Hosted Behavior
+## 10. Directed Hierarchy Graph (Graph Tab)
+
+The app includes a dedicated `Graph` tab that estimates and visualizes a
+directed parent -> child hierarchy among matched terms.
+
+### 10.1 Directed subsumption score
+
+For candidate edge `(parent, child)`, the score is:
+
+- `score = 0.55 * lex_sub + 0.25 * def_contain + 0.20 * def_sim`
+
+Where:
+
+- `lex_sub`: fraction of parent term tokens also present in the child term
+- `def_contain`: fraction of parent term tokens present in the child definition text
+- `def_sim`: cosine similarity between combined parent/child definition texts
+
+Candidate gates:
+
+- `parent_token_n < child_token_n`
+- must pass lexical or definition-containment gate before final scoring
+
+Default display threshold in the graph UI is `min_score = 0.65`.
+
+### 10.2 Graph interaction model
+
+- Click a node to select its connected tree (ancestors + descendants).
+- Selected tree remains colored; non-linked nodes/edges are greyed.
+- Click background to clear selection.
+- Use `Focus Selected Tree` to fit/pan/zoom to the selected tree.
+
+Selection is shared with the main table: selected graph terms are highlighted in
+the table rows.
+
+### 10.3 Graph caching
+
+Hierarchy edge scoring is cached in:
+
+- `tools::R_user_dir("glossary.ipbes.ipcc", "cache")/hierarchy_edges_cache.rds`
+
+Cache is invalidated by a fingerprint over merged term/definition content.
+
+## 11. Local vs Hosted Behavior
 
 By default:
 
@@ -201,7 +244,7 @@ Override via env var:
 Hosted-safe deploy script (`scripts/deploy_shinyapps.R`) sets hosted default
 to disabled unless explicitly overridden.
 
-## 11. Running Locally
+## 12. Running Locally
 
 ### 11.1 Run app (normal)
 

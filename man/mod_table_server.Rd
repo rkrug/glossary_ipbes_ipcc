@@ -4,7 +4,7 @@
 \alias{mod_table_server}
 \title{Server for the glossary comparison table module}
 \usage{
-mod_table_server(id, merged_rv, cache_dir)
+mod_table_server(id, merged_rv, cache_dir, highlight_terms_rv = NULL)
 }
 \arguments{
 \item{id}{Shiny module namespace id.}
@@ -13,6 +13,9 @@ mod_table_server(id, merged_rv, cache_dir)
 \code{\link[tibble:tibble]{tibble::tibble()}} (output of \code{\link[=merge_glossaries]{merge_glossaries()}}).}
 
 \item{cache_dir}{Path to the cache directory.}
+
+\item{highlight_terms_rv}{Optional \code{\link[shiny:reactiveVal]{shiny::reactiveVal()}} containing a
+character vector of terms to highlight in the table.}
 }
 \description{
 Server for the glossary comparison table module

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Rainer M Krug" />
 
-<meta name="date" content="2026-02-27" />
+<meta name="date" content="2026-03-04" />
 
 <title>Technical Background: IPBES &lt;-&gt; IPCC Glossary Comparison</title>
 
@@ -353,7 +353,7 @@ display: none;
 <h1 class="title toc-ignore">Technical Background: IPBES &lt;-&gt; IPCC
 Glossary Comparison</h1>
 <h4 class="author">Rainer M Krug</h4>
-<h4 class="date">2026-02-27</h4>
+<h4 class="date">2026-03-04</h4>
 
 </div>
 
@@ -393,6 +393,14 @@ table</a></li>
 </ul></li>
 <li><a href="#startup-and-caching" id="toc-startup-and-caching">Startup
 and Caching</a></li>
+<li><a href="#directed-hierarchy-graph-graph-tab" id="toc-directed-hierarchy-graph-graph-tab">Directed Hierarchy Graph
+(Graph Tab)</a>
+<ul>
+<li><a href="#directed-subsumption-score" id="toc-directed-subsumption-score">Directed subsumption score</a></li>
+<li><a href="#graph-interaction-model" id="toc-graph-interaction-model">Graph interaction model</a></li>
+<li><a href="#graph-caching" id="toc-graph-caching">Graph
+caching</a></li>
+</ul></li>
 <li><a href="#local-vs-hosted-behavior" id="toc-local-vs-hosted-behavior">Local vs Hosted Behavior</a></li>
 <li><a href="#running-locally" id="toc-running-locally">Running
 Locally</a></li>
@@ -511,6 +519,8 @@ semantic API).</p>
 <li>punctuation-stripped/non-letter filtered</li>
 <li>split on whitespace</li>
 <li>stopword-filtered (<code>STOPWORDS</code>)</li>
+<li>no stemming/lemmatization (e.g., <code>impact</code> and
+<code>impacts</code> remain different tokens)</li>
 <li>represented as term-frequency vector</li>
 </ul>
 </div>
@@ -607,6 +617,57 @@ signatures match</li>
 </ol>
 <p>Table view snippets are precomputed and cached for faster
 rendering.</p>
+</div>
+<div id="directed-hierarchy-graph-graph-tab" class="section level1">
+<h1>Directed Hierarchy Graph (Graph Tab)</h1>
+<p>The app includes a dedicated <code>Graph</code> tab that estimates
+and visualizes a directed parent -&gt; child hierarchy among matched
+terms.</p>
+<div id="directed-subsumption-score" class="section level2">
+<h2>Directed subsumption score</h2>
+<p>For candidate edge <code>(parent, child)</code>, the score is:</p>
+<p><code>score = 0.55 * lex_sub + 0.25 * def_contain + 0.20 * def_sim</code></p>
+<p>Where:</p>
+<ul>
+<li><code>lex_sub</code>: fraction of parent term tokens also present in
+the child term</li>
+<li><code>def_contain</code>: fraction of parent term tokens present in
+the child definition text</li>
+<li><code>def_sim</code>: cosine similarity between combined
+parent/child definition texts</li>
+</ul>
+<p>Candidate gates:</p>
+<ul>
+<li><code>parent_token_n &lt; child_token_n</code></li>
+<li>must pass lexical or definition-containment gate before final
+scoring</li>
+</ul>
+<p>Default display threshold in the graph UI is
+<code>min_score = 0.65</code>.</p>
+</div>
+<div id="graph-interaction-model" class="section level2">
+<h2>Graph interaction model</h2>
+<ul>
+<li>Click a node to select its connected tree (ancestors +
+descendants).</li>
+<li>Selected tree remains colored; non-linked nodes/edges are
+greyed.</li>
+<li>Click background to clear selection.</li>
+<li>Use <code>Focus Selected Tree</code> to fit/pan/zoom to the selected
+tree.</li>
+</ul>
+<p>Selection is shared with the main table: selected graph terms are
+highlighted in the table rows.</p>
+</div>
+<div id="graph-caching" class="section level2">
+<h2>Graph caching</h2>
+<p>Hierarchy edge scoring is cached in:</p>
+<ul>
+<li><code>tools::R_user_dir(&quot;glossary.ipbes.ipcc&quot;, &quot;cache&quot;)/hierarchy_edges_cache.rds</code></li>
+</ul>
+<p>Cache is invalidated by a fingerprint over merged term/definition
+content.</p>
+</div>
 </div>
 <div id="local-vs-hosted-behavior" class="section level1">
 <h1>Local vs Hosted Behavior</h1>

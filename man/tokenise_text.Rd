@@ -15,6 +15,7 @@ A named integer vector of term frequencies, or an empty vector if
 }
 \description{
 Lowercases, removes punctuation, splits on whitespace, and removes common
-English stopwords (see \link{STOPWORDS}).
+English stopwords (see \link{STOPWORDS}). No stemming or lemmatization is applied,
+so inflections like "impact" and "impacts" are treated as different tokens.
 }
 \keyword{internal}

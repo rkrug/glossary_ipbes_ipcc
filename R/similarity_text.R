@@ -4,7 +4,8 @@
 #' Tokenise text into a term-frequency vector
 #'
 #' Lowercases, removes punctuation, splits on whitespace, and removes common
-#' English stopwords (see [STOPWORDS]).
+#' English stopwords (see [STOPWORDS]). No stemming or lemmatization is applied,
+#' so inflections like "impact" and "impacts" are treated as different tokens.
 #'
 #' @param text A single character string.
 #' @return A named integer vector of term frequencies, or an empty vector if

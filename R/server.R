@@ -15,6 +15,7 @@ build_server <- function(cache_dir, initial_data, enable_live_update = TRUE) {
 
     # -- Shared reactive state -----------------------------------------------
     merged_rv  <- shiny::reactiveVal(initial_data)
+    highlight_terms_rv <- shiny::reactiveVal(character(0))
 
     output$similarity_status <- shiny::renderText({
       data <- merged_rv()
@@ -32,7 +33,16 @@ build_server <- function(cache_dir, initial_data, enable_live_update = TRUE) {
     mod_table_server(
       id          = "main_table",
       merged_rv   = merged_rv,
-      cache_dir   = cache_dir
+      cache_dir   = cache_dir,
+      highlight_terms_rv = highlight_terms_rv
+    )
+
+    # -- Hierarchy graph module ----------------------------------------------
+    mod_graph_server(
+      id = "main_graph",
+      merged_rv = merged_rv,
+      cache_dir = cache_dir,
+      highlight_terms_rv = highlight_terms_rv
     )
   }
 }

@@ -19,8 +19,10 @@ mod_table_ui <- function(id) {
 #' @param merged_rv A [shiny::reactiveVal()] containing the merged glossary
 #'   [tibble::tibble()] (output of [merge_glossaries()]).
 #' @param cache_dir Path to the cache directory.
+#' @param highlight_terms_rv Optional [shiny::reactiveVal()] containing a
+#'   character vector of terms to highlight in the table.
 #' @keywords internal
-mod_table_server <- function(id, merged_rv, cache_dir) {
+mod_table_server <- function(id, merged_rv, cache_dir, highlight_terms_rv = NULL) {
   shiny::moduleServer(id, function(input, output, session) {
     prepared_rv <- shiny::reactiveVal(NULL)
     detail_registered <- new.env(parent = emptyenv())
@@ -45,6 +47,11 @@ mod_table_server <- function(id, merged_rv, cache_dir) {
     output$glossary_table <- reactable::renderReactable({
 
       data <- display_data()
+      highlight_terms <- if (!is.null(highlight_terms_rv)) {
+        as.character(highlight_terms_rv())
+      } else {
+        character(0)
+      }
 
       if (is.null(data) || nrow(data) == 0) {
         return(reactable::reactable(
@@ -55,6 +62,7 @@ mod_table_server <- function(id, merged_rv, cache_dir) {
 
       # Strip list-columns for the display frame; keep indices for detail fn
       display_df <- data[, c("term_display",
+                              "matched_term",
                               "sim_between_all", "between_similarity_html",
                               "sim_within_ipbes", "ipbes_preview_html",
                               "sim_within_ipcc", "ipcc_preview_html"),
@@ -70,6 +78,17 @@ mod_table_server <- function(id, merged_rv, cache_dir) {
         highlight    = TRUE,
         resizable    = TRUE,
         bordered     = TRUE,
+        rowStyle = function(index) {
+          term <- display_df$matched_term[index]
+          if (length(highlight_terms) > 0 && term %in% highlight_terms) {
+            list(
+              background = "#fff7d6",
+              boxShadow = "inset 4px 0 0 #f59e0b"
+            )
+          } else {
+            NULL
+          }
+        },
         theme        = reactable::reactableTheme(
           cellStyle     = list(fontSize = "1.02rem"),
           stripedColor  = "#f8f8f8",
@@ -82,6 +101,7 @@ mod_table_server <- function(id, merged_rv, cache_dir) {
             sortable = TRUE,
             html     = FALSE
           ),
+          matched_term = reactable::colDef(show = FALSE),
           sim_between_all = reactable::colDef(
             name     = "Similarity",
             width    = 260,
