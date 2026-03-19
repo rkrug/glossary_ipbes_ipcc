@@ -520,6 +520,32 @@ h2 {
   color: #334155;
 }
 
+.glossary-source-section h4 .glossary-header-term {
+  display: inline-block;
+  padding: 0.06em 0.42em;
+  border-radius: 0.45em;
+  background: rgba(43, 108, 176, 0.14);
+  color: #1f4f84;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9em;
+  font-weight: 700;
+}
+
+.glossary-source-ipbes h4 .glossary-header-term {
+  background: rgba(36, 91, 63, 0.16);
+  color: #245b3f;
+}
+
+.glossary-source-ipcc h4 .glossary-header-term {
+  background: rgba(43, 108, 176, 0.14);
+  color: #1f4f84;
+}
+
+.glossary-source-section h4 .glossary-header-suffix {
+  color: #334155;
+  font-weight: 700;
+}
+
 .glossary-source-caption {
   margin: 0 0 0.6rem 0;
   color: #64748b;

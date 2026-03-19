@@ -24,6 +24,7 @@ An R package containing two Shiny apps for comparing and exploring the
   - in-definition highlighting of glossary terms
   - hover to preview definitions and click highlighted terms to navigate
   - case-insensitive term matching and source-specific rendering
+  - in-app `About` modal and footer `GitHub Issues` link for user guidance
 
 ## Installation
 

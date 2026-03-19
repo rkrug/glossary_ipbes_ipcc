@@ -369,3 +369,15 @@ system("Rscript inst/scripts/scrape_ipcc_and_update_caches.R")
 ```
 
 Then rebuild/reinstall package as needed.
+
+### 11.5 Glossary explorer UX notes (v0.9.8)
+
+Recent glossary explorer presentation updates include:
+
+- dedicated in-app `About` modal with maintained project context text
+- footer placement of `GitHub Issues` under the data-source links
+- dynamic section headers in the form
+  `"<selected term> in IPBES Glossary"` / `"<selected term> in IPCC Glossary"`
+- combined `See also` list across displayed definitions, sorted alphabetically
+- attribution wording updated to
+  `Senckenberg Biodiversity and Climate`

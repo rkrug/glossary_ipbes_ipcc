@@ -469,6 +469,46 @@ run_app()
 
 ---
 
+## Session 9 — 2026-03-19
+
+**Tool**: Codex  
+**Model**: GPT-5  
+**Mode**: Default mode
+
+### Main requests handled
+
+- Prepared `0.9.8` release of glossary explorer updates.
+- Included finalized glossary explorer UI/content adjustments already present in
+  working tree:
+  - About modal text refresh
+  - footer Issues-link placement
+  - dynamic glossary section titles with selected-term emphasis
+  - merged + alphabetically sorted `See also` links
+  - institutional naming update to `Senckenberg Biodiversity and Climate`
+- Updated release/docs metadata for this release:
+  - `DESCRIPTION` version -> `0.9.8`
+  - top `NEWS.md` entry for `0.9.8`
+  - `README.md` glossary explorer feature notes
+  - `BACKGROUND.md` glossary explorer UX release notes
+
+### Files substantially updated in this session
+
+- `R/app_glossary.R`
+- `inst/www/about_glossary.html`
+- `inst/www/custom.css`
+- `DESCRIPTION`
+- `NEWS.md`
+- `README.md`
+- `BACKGROUND.md`
+- `AI_PROMPTS.md`
+
+### Release target
+
+- Package release prepared as `0.9.8` and deployed glossary explorer app to
+  `ipbes-data/glossary-ipbes-ipcc-explorer`
+
+---
+
 ## How to continue development with another AI agent
 
 Provide this file and the approved plan at

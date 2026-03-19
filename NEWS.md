@@ -1,3 +1,17 @@
+# glossary.ipbes.ipcc 0.9.8
+
+## Improvements
+
+* Glossary explorer About modal content refreshed with finalized project
+  context and attribution text.
+* Moved `GitHub Issues` access from the header to the footer data block.
+* Updated glossary section headers to include the selected term and improved
+  term emphasis styling.
+* Simplified `See also` output into one combined list and sorted linked terms
+  alphabetically.
+* Updated institution wording in app attribution to
+  `Senckenberg Biodiversity and Climate`.
+
 # glossary.ipbes.ipcc 0.9.0
 
 ## Improvements
